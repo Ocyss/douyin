@@ -5,7 +5,6 @@ import (
 	"github.com/Ocyss/douyin/internal/bootstrap"
 	"github.com/Ocyss/douyin/utils"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -16,8 +15,6 @@ var pidFile string
 
 // initServer 初始化服务
 func initServer() {
-	var baseDir, dataDir string
-	var err error
 	// 配置日志格式
 	formatter := logrus.TextFormatter{
 		ForceColors:               true,
@@ -28,22 +25,9 @@ func initServer() {
 	}
 	logrus.SetFormatter(&formatter)
 	// 服务初始化
-	cobra.OnInitialize(bootstrap.InitConf)
-	cobra.OnInitialize(bootstrap.InitLog)
-	cobra.OnInitialize(bootstrap.InitDb)
-
-	rootCmd.PersistentFlags().StringVar(&dataDir, "data", "data", "修改配置文件路径")
-	rootCmd.PersistentFlags().BoolVar(&flags.Debug, "debug", false, "Debug 模式（更多的日志输出）")
-	rootCmd.PersistentFlags().BoolVar(&flags.Dev, "dev", false, "开发环境")
-	rootCmd.PersistentFlags().BoolVar(&flags.LogStd, "log-std", false, "日志强制打印到控制台")
-	rootCmd.PersistentFlags().BoolVar(&flags.Memory, "memory", false, "使用内存数据库")
-	flags.Pro = !flags.Dev
-	// 获取可执行文件路径
-	if baseDir, err = os.Executable(); err != nil {
-		logrus.Fatal(err)
-	}
-	flags.ExPath = filepath.Dir(baseDir)
-	flags.DataDir = filepath.Join(flags.ExPath, dataDir)
+	bootstrap.InitConf()
+	bootstrap.InitLog()
+	bootstrap.InitDb()
 }
 
 // initDaemon 守护进程初始化

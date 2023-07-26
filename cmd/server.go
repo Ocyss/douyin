@@ -22,11 +22,8 @@ var serverCmd = &cobra.Command{
 	Long:  `Start the douyin server`,
 	Run: func(cmd *cobra.Command, args []string) {
 		initServer()
-		if !flags.Debug && !flags.Dev {
-			gin.SetMode(gin.ReleaseMode)
-		}
 		r := gin.New()
-		if flags.Debug {
+		if flags.Debug || flags.Dev {
 			gin.SetMode(gin.DebugMode)
 		} else {
 			gin.SetMode(gin.ReleaseMode)
