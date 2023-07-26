@@ -19,7 +19,7 @@ func InitConf() {
 		// 配置文件不存在，创建默认配置
 		log.Info("没检测到配置文件，将进行初始化 config.json.")
 		basePath := filepath.Dir(configPath)
-		err := os.MkdirAll(basePath, 0700)
+		err := os.MkdirAll(basePath, 0744)
 		if err != nil {
 			log.Fatalf("无法创建文件夹, %s", err)
 		}
