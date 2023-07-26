@@ -3,8 +3,8 @@ package model
 import "gorm.io/gorm"
 
 type Model struct {
-	ID        uint           `json:"id" gorm:"primarykey" `
-	CreatedAt int            `json:"created_at"`
-	UpdatedAt int            `json:"updated_at"`
+	ID        int64          `json:"id" gorm:"primarykey" `
+	CreatedAt int64          `json:"-"`
+	UpdatedAt int64          `json:"-"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }

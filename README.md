@@ -32,7 +32,7 @@
 不分先后，首字母排序
 - [daydayw](https://github.com/daydayw)
 - [Godvictory](https://github.com/Godvictory)
-- [haoer]()
+- [haoer](https://github.com/haoaer)
 - [hblovo](https://github.com/hblovo)
 - [koutaManaka](https://github.com/koutaManaka)
 - [leaveYoung](https://github.com/leaveYoung)
