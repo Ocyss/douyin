@@ -1,11 +1,16 @@
 package model
 
+import (
+	"gorm.io/gorm"
+	"time"
+)
+
 type (
 	// Video 视频表
 	Video struct {
 		Model
-		AuthorID      int64      `json:"-" gorm:"index"`
-		Author        User       `json:"author" gorm:"comment:视频作者信息"`
+		AuthorID      int64      `json:"-" gorm:"index;notNull;comment:视频作者信息"`
+		Author        User       `json:"author"`
 		PlayUrl       string     `json:"play_url" gorm:"comment:视频播放地址"`
 		CoverUrl      string     `json:"cover_url" gorm:"comment:视频封面地址"`
 		FavoriteCount int64      `json:"favorite_count" gorm:"comment:视频的点赞总数"`
@@ -16,18 +21,18 @@ type (
 		Desc          string     `json:"desc" gorm:"comment:简介"`
 		Comment       []*Comment `json:"comment,omitempty"` // 评论列表
 		// 自建字段
-		CoAuthor []*CoAuthor `json:"authors,omitempty" gorm:"foreignKey:AuthorID;comment:视频作者信息"`
+		CoAuthor []*UserCreation `json:"authors,omitempty" gorm:"-"` // 联合投稿
 	}
-	// CoAuthor 联合作者
-	CoAuthor struct {
-		VideoID  int64  `json:"video_id,omitempty"`
-		Video    Video  `json:"-" gorm:"primaryKey"`
-		AuthorID int64  `json:"author_id"`
-		Author   User   `json:"-" gorm:"primaryKey"`
-		Type     string `json:"type" gorm:"comment:创作者类型"` //参演，剪辑，录像，道具，编剧，打酱油
+	// UserCreation 联合作者
+	UserCreation struct {
+		VideoID   int64  `json:"video_id,omitempty" gorm:"primaryKey"`
+		UserID    int64  `json:"author_id" gorm:"primaryKey"`
+		Type      string `json:"type" gorm:"comment:创作者类型"` //Up主,参演，剪辑，录像，道具，编剧，打酱油
+		CreatedAt time.Time
+		DeletedAt gorm.DeletedAt `json:"-"`
 	}
 )
 
 func init() {
-	addMigrate(&Video{}, &CoAuthor{})
+	addMigrate(&Video{})
 }
