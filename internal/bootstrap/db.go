@@ -27,8 +27,11 @@ func InitDb() {
 		database := conf.Conf.Database
 		switch strings.ToUpper(database.Type) {
 		case "SQLITE3":
-			dialector = sqlite.Open(fmt.Sprintf("%s?_journal=WAL&_vacuum=incremental",
-				database.DbFile))
+			sqliteUrl := fmt.Sprintf("%s?_journal=WAL&_vacuum=incremental", database.DbFile)
+			if database.DbFile == "" {
+				sqliteUrl = "file::memory:?cache=shared"
+			}
+			dialector = sqlite.Open(sqliteUrl)
 		case "MYSQL":
 			dialector = mysql.Open(fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 				database.User, database.Password, database.Host, database.Port, database.Name))
