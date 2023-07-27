@@ -23,6 +23,7 @@ func InitConf() {
 			log.Fatalf("无法创建文件夹, %s", err)
 		}
 		conf.Conf = conf.DefaultConfig()
+		conf.Conf.JwtSecret = utils.RandString(17)
 		defaultData, _ := json.MarshalIndent(conf.Conf, "", "  ")
 		err = os.WriteFile(configPath, defaultData, 0666)
 		if err != nil {

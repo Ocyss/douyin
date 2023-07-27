@@ -13,7 +13,7 @@ func DefaultConfig() Config {
 			Host:     "localhost",
 			Port:     3306,
 			User:     "root",
-			Password: "<PASSWORD>",
+			Password: "",
 			Name:     "douyin",
 			DbFile:   "data/data.db",
 		},

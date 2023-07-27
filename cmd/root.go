@@ -34,7 +34,7 @@ func init() {
 	flags.Pro = !flags.Dev
 	// 获取可执行文件路径
 	if baseDir, err = os.Executable(); err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal("无法获取可执行文件路径", err)
 	}
 	flags.ExPath = filepath.Dir(baseDir)
 	flags.DataDir = filepath.Join(flags.ExPath, dataDir)
