@@ -1,13 +1,7 @@
 package conf
 
 var (
-	Conf      Config
-	Address   = Conf.Address
-	Port      = Conf.Port
-	JwtSecret = Conf.JwtSecret
-	Scheme    = Conf.Scheme
-	Database  = Conf.Database
-	Log       = Conf.Log
+	Conf Config
 )
 
 func DefaultConfig() Config {

@@ -4,15 +4,18 @@ import (
 	"github.com/Ocyss/douyin/internal/model"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"reflect"
 )
 
 var db *gorm.DB
 
 func Init(d *gorm.DB) {
 	db = d
-	err := db.AutoMigrate(&model.Comment{}, &model.User{}, &model.FriendUser{}, &model.Video{}, &model.Message{})
-	if err != nil {
-		log.Fatalf("数据库自动迁移失败: %s", err.Error())
+	for _, m := range model.GetMigrate() {
+		err := db.AutoMigrate(m)
+		if err != nil {
+			log.Fatalf("%s 模型自动迁移失败: %s", reflect.TypeOf(m), err.Error())
+		}
 	}
 }
 
