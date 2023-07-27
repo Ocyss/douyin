@@ -35,5 +35,8 @@ func InitLog() {
 		}
 		log.SetOutput(w)
 	}
+	if flags.Dev || flags.Debug {
+		log.Info("当前程序运行路径: ", flags.ExPath)
+	}
 	log.Info("初始化 logrus 成功!")
 }

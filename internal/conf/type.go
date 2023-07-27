@@ -13,6 +13,7 @@ type confScheme struct {
 	CertFile string `json:"cert_file"` // 证书路径
 	KeyFile  string `json:"key_file"`  // 证书路径
 }
+
 type confDatabase struct {
 	Type     string `json:"type"`     // 数据库类型，支持 sqlite3，mysql，postgresSql
 	Host     string `json:"host"`     // 数据库地址
