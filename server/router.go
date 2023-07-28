@@ -25,7 +25,7 @@ func Init(r *gin.Engine) {
 		router.GET("feed", handlers.VideoGet)                     // 获取视频流
 		router.POST("publish/action")                             // 视频投稿
 		tester.POST("publish/actionUrl", handlers.VideoActionUrl) // 视频投稿(测试接口)
-		router.GET("publish/list")                                // 获取发布列表
+		//router.GET("publish/list")                                // 获取发布列表
 	}
 	// 用户类接口
 	{
@@ -36,9 +36,9 @@ func Init(r *gin.Engine) {
 	// 互动类接口
 	{
 		router.POST("favorite/action") // 点赞操作
-		router.GET("favorite/list")    // 获取喜欢列表
-		router.POST("comment/action")  // 评论操作
-		router.GET("comment/list")     // 获取评论列表
+		//router.GET("favorite/list")    // 获取喜欢列表
+		router.POST("comment/action") // 评论操作
+		router.GET("comment/list")    // 获取评论列表
 	}
 	//社交类接口
 	{

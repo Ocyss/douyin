@@ -1,12 +1,11 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/Ocyss/douyin/internal/db"
 	"github.com/Ocyss/douyin/server/common"
 	"github.com/Ocyss/douyin/utils/tokens"
 	"github.com/gin-gonic/gin"
-	"strconv"
-	"time"
 )
 
 type (
@@ -21,15 +20,9 @@ type (
 
 // VideoGet 视频流获取
 func VideoGet(c *gin.Context) {
-	var latestTime int64
 	//token := c.Query("token")
-	if t := c.Query("latest_time"); t != "" {
-		latestTime, _ = strconv.ParseInt(t, 10, 0)
-	}
-	if latestTime == 0 {
-		latestTime = time.Now().UnixMilli()
-	}
-	data, err := db.Feed(latestTime)
+	t := c.Query("latest_time")
+	data, err := db.Feed(t)
 	if err != nil {
 		common.Err(c, "数据获取出错，请稍后再试.", err)
 	} else {
@@ -37,8 +30,9 @@ func VideoGet(c *gin.Context) {
 			"video_list": data,
 		}
 		if len(data) > 0 {
-			res["next_time"] = data[len(data)-1].CreatedAt.Unix()
+			res["next_time"] = data[len(data)-1].ID
 		}
+		fmt.Println("返回内容： ", res)
 		common.OK(c, res)
 	}
 }
@@ -52,7 +46,7 @@ func VideoAction(c *gin.Context) {
 // 测试接口可直接指定URL，或使用ID进行投稿
 func VideoActionUrl(c *gin.Context) {
 	var data actionData
-	err := c.Bind(&data)
+	err := c.BindJSON(&data)
 	if err != nil || (data.ID == 0 && data.Token == "") || (len(data.Data) == 0 && data.Url == "") {
 		common.ErrParam(c, err)
 		return

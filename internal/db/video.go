@@ -2,13 +2,15 @@ package db
 
 import (
 	"github.com/Ocyss/douyin/internal/model"
-	"time"
 )
 
-func Feed(latestTime int64) ([]model.Video, error) {
+func Feed(latestTime string) ([]model.Video, error) {
 	var data []model.Video
-	t := time.Unix(0, latestTime*int64(time.Millisecond))
-	err := db.Where("created_at < ?", t).Order("created_at DESC").Limit(5).Find(&data).Error
+	if len(latestTime) != 19 {
+		latestTime = "9999999999999999999"
+	}
+	//t := time.Unix(0, latestTime*int64(time.Millisecond))
+	err := db.Where("id < ?", latestTime).Order("id DESC").Limit(5).Find(&data).Error
 	if err != nil {
 		return nil, err
 	}
