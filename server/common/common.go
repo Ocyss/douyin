@@ -2,7 +2,6 @@ package common
 
 import (
 	"github.com/Ocyss/douyin/cmd/flags"
-	"github.com/Ocyss/douyin/server/handlers"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -10,11 +9,8 @@ import (
 const statusOk = 0
 const statusErr = 1
 
-//func OK(c *gin.Context) {
-//	OKData(c, nil)
-//}
-
-func OK(c *gin.Context, data ...handlers.H) {
+// OK 成功的请求
+func OK(c *gin.Context, data ...map[string]any) {
 	res := gin.H{
 		"status_code": statusOk,
 		"status_msg":  "Success",
@@ -27,6 +23,8 @@ func OK(c *gin.Context, data ...handlers.H) {
 	c.JSON(http.StatusOK, res)
 }
 
+// Err 失败的请求
+// 推荐所有错误返回都带上err，包括参数错误，在debug和dev模式下能快速定位bug
 func Err(c *gin.Context, msg string, err ...error) {
 	res := gin.H{
 		"status_code": statusErr,
@@ -43,6 +41,7 @@ func Err(c *gin.Context, msg string, err ...error) {
 	c.JSON(http.StatusOK, res)
 }
 
+// ErrParam 参数错误封装
 func ErrParam(c *gin.Context, err ...error) {
 	Err(c, "参数不正确", err...)
 }

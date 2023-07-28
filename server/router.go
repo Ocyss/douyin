@@ -18,11 +18,14 @@ func Init(r *gin.Engine) {
 	})
 
 	router := r.Group("douyin")
+	tester := r.Group("douyin")
+	tester.Use(middleware.Test())
 	// 视频类接口
 	{
-		router.GET("feed")            // 获取视频流
-		router.POST("publish/action") // 视频投稿
-		router.GET("publish/list")    // 获取发布列表
+		router.GET("feed", handlers.VideoGet)                     // 获取视频流
+		router.POST("publish/action")                             // 视频投稿
+		tester.POST("publish/actionUrl", handlers.VideoActionUrl) // 视频投稿(测试接口)
+		router.GET("publish/list")                                // 获取发布列表
 	}
 	// 用户类接口
 	{
