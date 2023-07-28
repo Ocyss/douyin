@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/Ocyss/douyin/utils"
 	"gorm.io/gorm"
 	"time"
 )
@@ -14,6 +15,11 @@ type Model struct {
 	CreatedAt time.Time      `json:"-" gorm:"comment:创建时间"`
 	UpdatedAt time.Time      `json:"-" gorm:"comment:修改时间"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"comment:删除时间"`
+}
+
+func (u *Model) BeforeCreate(tx *gorm.DB) (err error) {
+	u.ID = utils.GetId()
+	return
 }
 
 func GetMigrate() []any {
