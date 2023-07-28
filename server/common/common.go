@@ -2,31 +2,34 @@ package common
 
 import (
 	"github.com/Ocyss/douyin/cmd/flags"
+	"github.com/Ocyss/douyin/server/handlers"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-const STATUS_OK = 0
-const STATUS_ERR = 1
+const statusOk = 0
+const statusErr = 1
 
-func OK(c *gin.Context) {
-	OKData(c, nil)
-}
+//func OK(c *gin.Context) {
+//	OKData(c, nil)
+//}
 
-func OKData(c *gin.Context, data gin.H) {
+func OK(c *gin.Context, data ...handlers.H) {
 	res := gin.H{
-		"status_code": STATUS_OK,
+		"status_code": statusOk,
 		"status_msg":  "Success",
 	}
-	for k, v := range data {
-		res[k] = v
+	for d := range data {
+		for k, v := range data[d] {
+			res[k] = v
+		}
 	}
 	c.JSON(http.StatusOK, res)
 }
 
-func ErrCode(c *gin.Context, msg string, err ...error) {
+func Err(c *gin.Context, msg string, err ...error) {
 	res := gin.H{
-		"status_code": STATUS_ERR,
+		"status_code": statusErr,
 		"status_msg":  msg,
 	}
 	// 调试与开发模式，返回错误消息。
@@ -40,10 +43,6 @@ func ErrCode(c *gin.Context, msg string, err ...error) {
 	c.JSON(http.StatusOK, res)
 }
 
-func Err(c *gin.Context, msg string, err ...error) {
-	ErrCode(c, msg, err...)
-}
-
 func ErrParam(c *gin.Context, err ...error) {
-	ErrCode(c, "参数不正确", err...)
+	Err(c, "参数不正确", err...)
 }

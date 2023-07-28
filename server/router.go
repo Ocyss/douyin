@@ -18,5 +18,35 @@ func Init(r *gin.Engine) {
 	})
 
 	router := r.Group("douyin")
-	router.GET("feed", handlers.FeedGet)
+	// 视频类接口
+	{
+		router.GET("feed")            // 获取视频流
+		router.POST("publish/action") // 视频投稿
+		router.GET("publish/list")    // 获取发布列表
+	}
+	// 用户类接口
+	{
+		router.POST("user/register", handlers.UserRegister) // 用户注册
+		router.POST("user/login")                           // 用户登录
+		router.GET("user")                                  // 获取用户信息
+	}
+	// 互动类接口
+	{
+		router.POST("favorite/action") // 点赞操作
+		router.GET("favorite/list")    // 获取喜欢列表
+		router.POST("comment/action")  // 评论操作
+		router.GET("comment/list")     // 获取评论列表
+	}
+	//社交类接口
+	{
+		router.POST("relation/action")       // 关注/取关 操作
+		router.GET("relatioin/follow/list")  // 获取用户关注列表
+		router.GET("relation/follower/list") // 获取用户粉丝列表
+		router.GET("relation/friend/list")   // 获取用户好友列表
+		// 消息类接口
+		{
+			router.GET("message/chat")    // 获取消息
+			router.POST("message/action") // 发送消息
+		}
+	}
 }

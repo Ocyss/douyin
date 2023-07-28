@@ -1,6 +1,8 @@
 ### user files
 data
 main
+private
+
 # project files
 .idea
 .vscode
