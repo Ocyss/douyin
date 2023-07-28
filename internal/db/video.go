@@ -7,7 +7,7 @@ import (
 func Feed(latestTime string) ([]model.Video, error) {
 	var data []model.Video
 	if len(latestTime) != 19 {
-		latestTime = "9999999999999999999"
+		latestTime = "9223372036854775806"
 	}
 	//t := time.Unix(0, latestTime*int64(time.Millisecond))
 	err := db.Where("id < ?", latestTime).Order("id DESC").Limit(5).Find(&data).Error
