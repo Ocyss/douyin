@@ -96,10 +96,8 @@ func UserInfo(c *gin.Context) {
 	)
 	// 参数绑定
 	if err := c.ShouldBindQuery(&reqs); err != nil {
-		if err2 := c.ShouldBindJSON(&reqs); err2 != nil {
-			common.ErrParam(c, errors.Join(err, err2))
-			return
-		}
+		common.ErrParam(c, err)
+		return
 	}
 
 	token, err := tokens.CheckToken(reqs.Token)
