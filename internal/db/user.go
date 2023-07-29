@@ -2,11 +2,10 @@ package db
 
 import (
 	"github.com/Ocyss/douyin/internal/model"
-	"github.com/Ocyss/douyin/utils/tokens"
 	"gopkg.in/hlandau/passlib.v1"
 )
 
-func Register(data model.User) (id int64, token string, msg string, err error) {
+func Register(data *model.User) (msg string, err error) {
 	hash, err := passlib.Hash(data.Pawd)
 	if err != nil {
 		msg = "请更换您的密码再试一次"
@@ -18,16 +17,11 @@ func Register(data model.User) (id int64, token string, msg string, err error) {
 		msg = "抱歉，请稍后再试..."
 		return
 	}
-	token, err = tokens.GetToken(data.ID, data.Name)
-	if err != nil {
-		msg = "抱歉，麻烦再试一次吧..."
-		return
-	}
-	return data.ID, token, "", nil
+	return "", nil
 }
 
-func Login(user, pawd string) (id int64, token string, msg string, err error) {
-	var data model.User
+func Login(user, pawd string) (data *model.User, msg string, err error) {
+	data = new(model.User)
 	//根据用户名获取对应的全部数据
 	err = db.Where("name = ?", user).Find(&data).Error
 	if err != nil {
@@ -44,12 +38,7 @@ func Login(user, pawd string) (id int64, token string, msg string, err error) {
 		//登陆成功，判断是否需要更换哈希值
 		db.Where(data).Update("pawd", newHash)
 	}
-	token, err = tokens.GetToken(data.ID, data.Name)
-	if err != nil {
-		msg = "抱歉，麻烦再试一次吧..."
-		return
-	}
-	return data.ID, token, "", nil
+	return
 }
 
 func UserInfo(id int64) (data model.User, msg string, err error) {

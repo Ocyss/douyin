@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"errors"
 	"github.com/Ocyss/douyin/internal/db"
 	"github.com/Ocyss/douyin/internal/model"
 	"github.com/Ocyss/douyin/server/common"
@@ -43,22 +42,26 @@ func UserLogin(c *gin.Context) {
 		reqs userReqs
 	)
 	// 参数绑定
-	if err := c.ShouldBindQuery(&reqs); err != nil {
-		if err2 := c.ShouldBindJSON(&reqs); err2 != nil {
-			common.ErrParam(c, errors.Join(err, err2))
-			return
-		}
+	if err := common.Bind(c, &reqs); err != nil {
+		common.ErrParam(c, err)
+		return
 	}
 	if msg := checks.ValidateInput(4, 32, reqs.Name, reqs.Pawd); len(msg) > 0 {
 		common.Err(c, "账户或者密码"+msg)
 		return
 	}
 
-	id, token, msg, err := db.Login(reqs.Name, reqs.Pawd)
+	data, msg, err := db.Login(reqs.Name, reqs.Pawd)
 	if err != nil {
 		common.Err(c, msg, err)
+		return
+	}
+	token, err := tokens.GetToken(data.ID, data.Name)
+	if err != nil {
+		msg = "抱歉，麻烦再试一次吧..."
+		return
 	} else {
-		common.OK(c, H{"user_id": id, "token": token})
+		common.OK(c, H{"user_id": data.ID, "token": token})
 	}
 }
 
@@ -69,22 +72,27 @@ func UserRegister(c *gin.Context) {
 		data model.User
 	)
 	// 参数绑定
-	if err := c.ShouldBindQuery(&reqs); err != nil {
-		if err2 := c.ShouldBindJSON(&reqs); err2 != nil {
-			common.ErrParam(c, errors.Join(err, err2))
-			return
-		}
+	if err := common.Bind(c, &reqs); err != nil {
+		common.ErrParam(c, err)
+		return
 	}
 	if msg := checks.ValidateInput(4, 32, reqs.Name, reqs.Pawd); len(msg) > 0 {
 		common.Err(c, "账户或者密码"+msg)
 		return
 	}
 	_ = utils.Merge(&data, reqs)
-	id, token, msg, err := db.Register(data)
+
+	msg, err := db.Register(&data)
 	if err != nil {
 		common.Err(c, msg, err)
+	}
+
+	token, err := tokens.GetToken(data.ID, data.Name)
+	if err != nil {
+		common.Err(c, "抱歉，麻烦再试一次吧...", err)
+		return
 	} else {
-		common.OK(c, H{"user_id": id, "token": token})
+		common.OK(c, H{"user_id": data.ID, "token": token})
 	}
 }
 
@@ -100,16 +108,16 @@ func UserInfo(c *gin.Context) {
 		return
 	}
 
-	token, err := tokens.CheckToken(reqs.Token)
+	_, err := tokens.CheckToken(reqs.Token)
 
 	if err != nil {
 		common.Err(c, "Token 错误", err)
 		return
 	}
-	if token.ID != reqs.ID {
-		common.Err(c, "Token 非法")
-		return
-	}
+	//if token.ID != reqs.ID {
+	//	common.Err(c, "Token 非法")
+	//	return
+	//}
 
 	data, msg, err := db.UserInfo(reqs.ID)
 	if err != nil {
