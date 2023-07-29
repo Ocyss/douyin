@@ -30,7 +30,7 @@ func Init(r *gin.Engine) {
 	// 用户类接口
 	{
 		router.POST("user/register", handlers.UserRegister) // 用户注册
-		router.POST("user/login")                           // 用户登录
+		router.POST("user/login/", handlers.UserLogin)      // 用户登录
 		router.GET("user")                                  // 获取用户信息
 	}
 	// 互动类接口

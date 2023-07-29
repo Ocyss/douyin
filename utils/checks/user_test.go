@@ -2,11 +2,7 @@ package checks
 
 import "testing"
 
-func TestUsername(t *testing.T) {
-
-}
-
-func Test_f(t *testing.T) {
+func TestIsValidString(t *testing.T) {
 	tests := []struct {
 		args string
 		want bool
@@ -14,7 +10,7 @@ func Test_f(t *testing.T) {
 		{"qwertyuuio", true},
 		{"123456789", true},
 		{"asdqwe5451232", true},
-		{"1", false},
+		{"1", true},
 		{"", false},
 		{"1564165....", true},
 		{"!!!!....", true},
@@ -24,15 +20,15 @@ func Test_f(t *testing.T) {
 		{"]][[", false},
 		{"}}{{", false},
 		{"....", true},
-		{"++++", true},
-		{"----", true},
-		{"~~~~", true},
+		{"++++", false},
+		{"----", false},
+		{"~~~~", false},
 		{"~~~", false},
 		{":::'''\"\"|||\\\\///", false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.args, func(t *testing.T) {
-			if got := f(tt.args); got != tt.want {
+			if got := isValidString(tt.args); got != tt.want {
 				t.Errorf("f() = %v, want %v", got, tt.want)
 			}
 		})

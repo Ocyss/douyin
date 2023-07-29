@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/Ocyss/douyin/internal/db"
 	"github.com/Ocyss/douyin/server/common"
 	"github.com/Ocyss/douyin/utils/tokens"
@@ -32,7 +31,7 @@ func VideoGet(c *gin.Context) {
 		if len(data) > 0 {
 			res["next_time"] = data[len(data)-1].ID
 		}
-		fmt.Println("返回内容： ", res)
+		//fmt.Println("返回内容： ", res)
 		common.OK(c, res)
 	}
 }
@@ -46,7 +45,7 @@ func VideoAction(c *gin.Context) {
 // 测试接口可直接指定URL，或使用ID进行投稿
 func VideoActionUrl(c *gin.Context) {
 	var data actionData
-	err := c.BindJSON(&data)
+	err := c.ShouldBindJSON(&data)
 	if err != nil || (data.ID == 0 && data.Token == "") || (len(data.Data) == 0 && data.Url == "") {
 		common.ErrParam(c, err)
 		return
