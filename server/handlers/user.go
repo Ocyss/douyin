@@ -7,6 +7,7 @@ import (
 	"github.com/Ocyss/douyin/server/common"
 	"github.com/Ocyss/douyin/utils"
 	"github.com/Ocyss/douyin/utils/checks"
+	"github.com/Ocyss/douyin/utils/tokens"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,6 +17,24 @@ type userReqs struct {
 	Avatar          string `json:"avatar" form:"avatar"`                        // 用户头像
 	BackgroundImage string `json:"background_image" form:"background_image"`    // 用户个人页顶部大图
 	Signature       string `json:"signature" form:"signature"`                  // 个人简介
+}
+
+type userInfoReqs struct {
+	ID    int64  `json:"user_id" form:"user_id" binding:"required"` // 用户id
+	Token string `json:"token" form:"token" binding:"required"`     // 用户鉴权token
+}
+type userInfoResp struct {
+	ID              int64  `json:"user_id"`          // 用户id
+	Name            string `json:"name"`             // 用户名称
+	FollowCount     int64  `json:"follow_count"`     // 关注总数
+	FollowerCount   int64  `json:"follower_count"`   // 粉丝总数
+	IsFollow        bool   `json:"is_follow"`        // 是否关注
+	Avatar          string `json:"avatar"`           // 用户头像
+	BackgroundImage string `json:"background_image"` //用户个人页顶部大图
+	Signature       string `json:"signature"`        //个人简介
+	WorkCount       int64  `json:"work_count"`       // 作品数量
+	TotalFavorited  int64  `json:"total_favorited"`  // 获赞数量
+	FavoriteCount   int64  `json:"favorite_count"`   // 点赞数量
 }
 
 // UserLogin 用户登陆
@@ -71,5 +90,34 @@ func UserRegister(c *gin.Context) {
 
 // UserInfo 用户信息
 func UserInfo(c *gin.Context) {
-	// TODO: 用户信息接口
+	var (
+		reqs userInfoReqs
+		resp userInfoResp
+	)
+	// 参数绑定
+	if err := c.ShouldBindQuery(&reqs); err != nil {
+		if err2 := c.ShouldBindJSON(&reqs); err2 != nil {
+			common.ErrParam(c, errors.Join(err, err2))
+			return
+		}
+	}
+
+	token, err := tokens.CheckToken(reqs.Token)
+
+	if err != nil {
+		common.Err(c, "Token 错误", err)
+		return
+	}
+	if token.ID != reqs.ID {
+		common.Err(c, "Token 非法")
+		return
+	}
+
+	data, msg, err := db.UserInfo(reqs.ID)
+	if err != nil {
+		common.Err(c, msg, err)
+	} else {
+		_ = utils.Merge(&resp, data)
+		common.OK(c, H{"user": resp})
+	}
 }

@@ -34,7 +34,9 @@ func Err(c *gin.Context, msg string, err ...error) {
 	if (flags.Dev || flags.Debug) && len(err) > 0 {
 		errs := make([]string, len(err))
 		for i, e := range err {
-			errs[i] = e.Error()
+			if e != nil {
+				errs[i] = e.Error()
+			}
 		}
 		res["errmsg"] = errs
 	}

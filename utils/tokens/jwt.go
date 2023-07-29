@@ -3,7 +3,7 @@ package tokens
 import (
 	"errors"
 	"github.com/Ocyss/douyin/internal/conf"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"time"
 )
 
@@ -12,17 +12,17 @@ var JwtKey = []byte(conf.Conf.JwtSecret)
 type MyClaims struct {
 	ID       int64  `json:"id"`
 	Username string `json:"username"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 // GetToken 生成token
 func GetToken(id int64, username string) (string, error) {
-	expireTime := time.Now().Add(time.Hour * 24 * 3)
+	expireTime := time.Now().Add(time.Hour * 24 * 3) // 三天过期
 	SetClaims := MyClaims{
 		id,
 		username,
-		jwt.StandardClaims{
-			ExpiresAt: expireTime.Unix(),
+		jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expireTime),
 			Issuer:    "ByteHunters",
 		},
 	}
@@ -32,15 +32,16 @@ func GetToken(id int64, username string) (string, error) {
 
 // CheckToken 验证token
 func CheckToken(token string) (*MyClaims, error) {
-	setToken, err := jwt.ParseWithClaims(token, &MyClaims{}, func(token *jwt.Token) (interface{}, error) {
+	key, err := jwt.ParseWithClaims(token, &MyClaims{}, func(*jwt.Token) (any, error) {
 		return JwtKey, nil
 	})
+
 	if err != nil {
 		return nil, err
 	}
-	if key, ok := setToken.Claims.(*MyClaims); ok && setToken.Valid {
-		return key, nil
+	if claims, ok := key.Claims.(*MyClaims); ok && key.Valid {
+		return claims, nil
 	} else {
-		return nil, errors.New("验证失败")
+		return nil, errors.New("你的token已过期")
 	}
 }

@@ -5,25 +5,43 @@ import (
 	"reflect"
 )
 
-func Merge(dst, src any) error {
-	srcT, srcV := reflect.TypeOf(src), reflect.ValueOf(src)
+func verify(dst, src any) (srcT, dstT reflect.Type, srcV, dstV reflect.Value, err error) {
+	srcT, srcV = reflect.TypeOf(src), reflect.ValueOf(src)
 	if srcT.Kind() == reflect.Ptr {
 		srcT, srcV = srcT.Elem(), srcV.Elem()
 	}
 	if srcT.Kind() != reflect.Struct {
-		return errors.New("仅支持 Struct 进行合并")
+		err = errors.New("仅支持 Struct 进行合并")
+		return
 	}
-	dstT, dstV := reflect.TypeOf(dst), reflect.ValueOf(dst)
+	dstT, dstV = reflect.TypeOf(dst), reflect.ValueOf(dst)
 	if dstT.Kind() != reflect.Ptr || dstT.Elem().Kind() != reflect.Struct {
-		return errors.New("dst 必须为 Struct指针")
+		err = errors.New("dst 必须为 Struct指针")
 	} else {
 		dstT, dstV = dstT.Elem(), dstV.Elem()
 	}
-	for i := 0; i < srcV.NumField(); i++ {
-		curT, curV := srcT.Field(i), srcV.Field(i)
-		f := dstV.FieldByName(curT.Name)
-		if curV.Type() == f.Type() {
-			f.Set(curV)
+	return
+}
+func Merge(dst, src any) error {
+	srcT, dstT, srcV, dstV, err := verify(dst, src)
+	if err != nil {
+		return err
+	}
+	if srcV.NumField() < dstV.NumField() {
+		for i := 0; i < srcV.NumField(); i++ {
+			curT, curV := srcT.Field(i), srcV.Field(i)
+			f := dstV.FieldByName(curT.Name)
+			if f.IsValid() && curV.Type() == f.Type() {
+				f.Set(curV)
+			}
+		}
+	} else {
+		for i := 0; i < dstV.NumField(); i++ {
+			curT, curV := dstT.Field(i), dstV.Field(i)
+			f := srcV.FieldByName(curT.Name)
+			if f.IsValid() && curV.Type() == f.Type() {
+				curV.Set(f)
+			}
 		}
 	}
 	return nil

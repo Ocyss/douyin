@@ -29,7 +29,7 @@ func Register(data model.User) (id int64, token string, msg string, err error) {
 func Login(user, pawd string) (id int64, token string, msg string, err error) {
 	var data model.User
 	//根据用户名获取对应的全部数据
-	err = db.Where("name=?", user).Find(&data).Error
+	err = db.Where("name = ?", user).Find(&data).Error
 	if err != nil {
 		msg = "没有此用户名~"
 		return
@@ -50,4 +50,13 @@ func Login(user, pawd string) (id int64, token string, msg string, err error) {
 		return
 	}
 	return data.ID, token, "", nil
+}
+
+func UserInfo(id int64) (data model.User, msg string, err error) {
+	data.ID = id
+	err = db.Find(&data).Error
+	if err != nil {
+		msg = "抱歉,请稍后再试"
+	}
+	return
 }
