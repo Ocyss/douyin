@@ -26,34 +26,34 @@ func Init(r *gin.Engine) {
 	tester.Use(middleware.Test())
 	// 视频类接口
 	{
-		newRouter(router, "feed/", handlers.VideoGet).GET()                     // 获取视频流
-		newRouter(router, "publish/action/", handlers.VideoAction).POST()       // 视频投稿
-		newRouter(tester, "publish/actionUrl/", handlers.VideoActionUrl).POST() // 视频投稿(测试接口)
-		newRouter(router, "publish/list/", handlers.VideoList).GET()            // 获取发布列表
+		newRouter(router, "GET", "feed/", handlers.VideoGet)                     // 获取视频流
+		newRouter(router, "POST", "publish/action/", handlers.VideoAction)       // 视频投稿
+		newRouter(tester, "POST", "publish/actionUrl/", handlers.VideoActionUrl) // 视频投稿(测试接口)
+		newRouter(router, "GET", "publish/list/", handlers.VideoList)            // 获取发布列表
 	}
 	// 用户类接口
 	{
-		newRouter(router, "user/register/", handlers.UserRegister).POST() // 用户注册
-		newRouter(router, "user/login/", handlers.UserLogin).POST()       // 用户登录
-		newRouter(router, "user/", handlers.UserInfo).GET()               // 获取用户信息
+		newRouter(router, "POST", "user/register/", handlers.UserRegister) // 用户注册
+		newRouter(router, "POST", "user/login/", handlers.UserLogin)       // 用户登录
+		newRouter(router, "GET", "user/", handlers.UserInfo)               // 获取用户信息
 	}
 	// 互动类接口
 	{
-		newRouter(router, "favorite/action/", handlers.FavoriteAction).POST() // 点赞操作
-		newRouter(router, "favorite/list/", handlers.FavoriteList).GET()      // 获取喜欢列表
-		newRouter(router, "comment/action/", nil).POST()                      // 评论操作
-		newRouter(router, "comment/list/", nil).GET()                         // 获取评论列表
+		newRouter(router, "POST", "favorite/action/", handlers.FavoriteAction) // 点赞操作
+		newRouter(router, "GET", "favorite/list/", handlers.FavoriteList)      // 获取喜欢列表
+		newRouter(router, "POST", "comment/action/", nil)                      // 评论操作
+		newRouter(router, "GET", "comment/list/", nil)                         // 获取评论列表
 	}
 	//社交类接口
 	{
-		newRouter(router, "relation/action/", nil).POST()       // 关注/取关 操作
-		newRouter(router, "relatioin/follow/list/", nil).GET()  // 获取用户关注列表
-		newRouter(router, "relation/follower/list/", nil).GET() // 获取用户粉丝列表
-		newRouter(router, "relation/friend/list/", nil).GET()   // 获取用户好友列表
+		newRouter(router, "POST", "relation/action/", nil)       // 关注/取关 操作
+		newRouter(router, "GET", "relatioin/follow/list/", nil)  // 获取用户关注列表
+		newRouter(router, "GET", "relation/follower/list/", nil) // 获取用户粉丝列表
+		newRouter(router, "GET", "relation/friend/list/", nil)   // 获取用户好友列表
 		// 消息类接口
 		{
-			newRouter(router, "message/chat/", nil).GET()    // 获取消息
-			newRouter(router, "message/action/", nil).POST() // 发送消息
+			newRouter(router, "GET", "message/chat/", nil)    // 获取消息
+			newRouter(router, "POST", "message/action/", nil) // 发送消息
 		}
 	}
 	// 挂载 web 服务

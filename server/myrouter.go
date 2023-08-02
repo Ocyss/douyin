@@ -9,8 +9,8 @@ import (
 
 type MyHandler func(*gin.Context) (int, any)
 
-// handler 装饰器
-func handler() func(h MyHandler) gin.HandlerFunc {
+// decorator 装饰器
+func decorator() func(h MyHandler) gin.HandlerFunc {
 	return func(h MyHandler) gin.HandlerFunc {
 		return func(c *gin.Context) {
 			code, data := h(c)
@@ -55,45 +55,9 @@ func handler() func(h MyHandler) gin.HandlerFunc {
 	}
 }
 
-type myRouter struct {
-	Group    *gin.RouterGroup
-	Path     string
-	Handler  MyHandler
-	Handlers []gin.HandlerFunc
-}
-
-func newRouter(group *gin.RouterGroup, path string, handler MyHandler, handlers ...gin.HandlerFunc) *myRouter {
-	return &myRouter{
-		group,
-		path,
-		handler,
-		handlers}
-}
-
-func (r *myRouter) Handle(method string) *myRouter {
-	if r.Handler == nil {
-		// 防止空指针 gin报错
-		return r
+func newRouter(group *gin.RouterGroup, method string, path string, handler MyHandler, handlers ...gin.HandlerFunc) {
+	if handler != nil {
+		// 未开发的路由传nil,不挂载
+		group.Handle(method, path, append(handlers, decorator()(handler))...)
 	}
-	r.Group.Handle(method, r.Path, append(r.Handlers, handler()(r.Handler))...)
-	return r
-}
-func (r *myRouter) GET() *myRouter {
-	r.Handle("GET")
-	return r
-}
-
-func (r *myRouter) POST() *myRouter {
-	r.Handle("POST")
-	return r
-}
-
-func (r *myRouter) PUT() *myRouter {
-	r.Handle("PUT")
-	return r
-}
-
-func (r *myRouter) DELETE() *myRouter {
-	r.Handle("DELETE")
-	return r
 }
