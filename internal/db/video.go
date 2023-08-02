@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 )
 
+// Feed 获取视频流
 func Feed(latestTime string) ([]model.Video, error) {
 	var data []model.Video
 	if len(latestTime) != 19 {
@@ -21,8 +22,8 @@ func Feed(latestTime string) ([]model.Video, error) {
 	return data, nil
 }
 
-// Action 视频投稿
-func Action(id int64, file multipart.File, url, title string) (int64, string, error) {
+// VideoUpload 视频投稿
+func VideoUpload(id int64, file multipart.File, url, title string) (int64, string, error) {
 	var data = model.Video{
 		AuthorID: id,
 		PlayUrl:  url,

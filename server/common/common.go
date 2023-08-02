@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// 2023-08-02 20:28:15 决定废弃此方案,重新封装路由
 const statusOk = 0
 const statusErr = 1
 

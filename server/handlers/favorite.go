@@ -15,51 +15,45 @@ type actionReqs struct {
 }
 
 // FavoriteAction 点赞
-func FavoriteAction(c *gin.Context) {
+func FavoriteAction(c *gin.Context) (int, any) {
 	var (
 		reqs actionReqs
 	)
 	// 参数绑定
 	if err := common.Bind(c, &reqs); err != nil {
-		common.ErrParam(c, err)
-		return
+		return fail, ErrParam(err)
 	}
 	claims, err := tokens.CheckToken(reqs.Token)
 
 	if err != nil {
-		common.Err(c, "Token 错误", err)
-		return
+		return fail, Err("Token 错误", err)
 	}
 	err = db.VideoLike(claims.ID, reqs.VideoId, reqs.ActionType)
 	if err != nil {
-		common.Err(c, "网卡了,再试一次吧", err)
-	} else {
-		common.OK(c)
+		return fail, Err("网卡了,再试一次吧", err)
 	}
+	return ok, nil
 }
 
 // FavoriteList 点赞列表
-func FavoriteList(c *gin.Context) {
+func FavoriteList(c *gin.Context) (int, any) {
 	var (
 		data []*model.Video
-		reqs userInfoReqs
+		reqs userReqs
 	)
 	// 参数绑定
 	if err := c.ShouldBindQuery(&reqs); err != nil {
-		common.ErrParam(c, err)
-		return
+		return fail, ErrParam(err)
 	}
 	_, err := tokens.CheckToken(reqs.Token)
 
 	if err != nil {
-		common.Err(c, "Token 错误", err)
-		return
+		return fail, Err("Token 错误", err)
 	}
 
 	data, err = db.VideoLikeList(reqs.ID)
 	if err != nil {
-		common.Err(c, "网卡了,再试一次吧", err)
-	} else {
-		common.OK(c, H{"video_list": data})
+		return fail, Err("网卡了,再试一次吧", err)
 	}
+	return ok, H{"video_list": data}
 }
