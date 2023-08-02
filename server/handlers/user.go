@@ -44,21 +44,21 @@ func UserLogin(c *gin.Context) (int, any) {
 	)
 	// 参数绑定
 	if err := common.Bind(c, &reqs); err != nil {
-		return fail, ErrParam(err)
+		return ErrParam(err)
 	}
 	if msg := checks.ValidateInput(4, 32, reqs.Name, reqs.Pawd); len(msg) > 0 {
-		return fail, Err("账户或者密码" + msg)
+		return Err("账户或者密码" + msg)
 	}
 
 	data, msg, err := db.Login(reqs.Name, reqs.Pawd)
 	if err != nil {
-		return fail, Err(msg, err)
+		return Err(msg, err)
 	}
 	token, err := tokens.GetToken(data.ID, data.Name)
 	if err != nil {
-		return fail, Err("抱歉，麻烦再试一次吧...", err)
+		return Err("抱歉，麻烦再试一次吧...", err)
 	}
-	return ok, H{"user_id": data.ID, "token": token}
+	return Ok(H{"user_id": data.ID, "token": token})
 }
 
 // UserRegister 用户注册
@@ -69,23 +69,23 @@ func UserRegister(c *gin.Context) (int, any) {
 	)
 	// 参数绑定
 	if err := common.Bind(c, &reqs); err != nil {
-		return fail, ErrParam(err)
+		return ErrParam(err)
 	}
 	if msg := checks.ValidateInput(4, 32, reqs.Name, reqs.Pawd); len(msg) > 0 {
-		return fail, Err("账户或者密码" + msg)
+		return Err("账户或者密码" + msg)
 	}
 	_ = utils.Merge(&data, reqs)
 
 	msg, err := db.Register(&data)
 	if err != nil {
-		return fail, Err(msg, err)
+		return Err(msg, err)
 	}
 
 	token, err := tokens.GetToken(data.ID, data.Name)
 	if err != nil {
-		return fail, Err("抱歉，麻烦再试一次吧...", err)
+		return Err("抱歉，麻烦再试一次吧...", err)
 	}
-	return ok, H{"user_id": data.ID, "token": token}
+	return Ok(H{"user_id": data.ID, "token": token})
 }
 
 // UserInfo 用户信息
@@ -96,18 +96,18 @@ func UserInfo(c *gin.Context) (int, any) {
 	)
 	// 参数绑定
 	if err := c.ShouldBindQuery(&reqs); err != nil {
-		return fail, ErrParam(err)
+		return ErrParam(err)
 	}
 
 	_, err := tokens.CheckToken(reqs.Token)
 
 	if err != nil {
-		return fail, Err("Token 错误", err)
+		return Err("Token 错误", err)
 	}
 	data, msg, err := db.UserInfo(reqs.ID)
 	if err != nil {
-		return fail, Err(msg, err)
+		return Err(msg, err)
 	}
 	_ = utils.Merge(&resp, data)
-	return ok, H{"user": resp}
+	return Ok(H{"user": resp})
 }

@@ -55,22 +55,22 @@ func handler() func(h MyHandler) gin.HandlerFunc {
 	}
 }
 
-type myrouter struct {
+type myRouter struct {
 	Group    *gin.RouterGroup
 	Path     string
 	Handler  MyHandler
 	Handlers []gin.HandlerFunc
 }
 
-func newRouter(group *gin.RouterGroup, path string, handler MyHandler, handlers ...gin.HandlerFunc) *myrouter {
-	return &myrouter{
+func newRouter(group *gin.RouterGroup, path string, handler MyHandler, handlers ...gin.HandlerFunc) *myRouter {
+	return &myRouter{
 		group,
 		path,
 		handler,
 		handlers}
 }
 
-func (r *myrouter) Handle(method string) *myrouter {
+func (r *myRouter) Handle(method string) *myRouter {
 	if r.Handler == nil {
 		// 防止空指针 gin报错
 		return r
@@ -78,22 +78,22 @@ func (r *myrouter) Handle(method string) *myrouter {
 	r.Group.Handle(method, r.Path, append(r.Handlers, handler()(r.Handler))...)
 	return r
 }
-func (r *myrouter) GET() *myrouter {
+func (r *myRouter) GET() *myRouter {
 	r.Handle("GET")
 	return r
 }
 
-func (r *myrouter) POST() *myrouter {
+func (r *myRouter) POST() *myRouter {
 	r.Handle("POST")
 	return r
 }
 
-func (r *myrouter) PUT() *myrouter {
+func (r *myRouter) PUT() *myRouter {
 	r.Handle("PUT")
 	return r
 }
 
-func (r *myrouter) DELETE() *myrouter {
+func (r *myRouter) DELETE() *myRouter {
 	r.Handle("DELETE")
 	return r
 }

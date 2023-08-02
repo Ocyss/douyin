@@ -24,7 +24,7 @@ func VideoGet(c *gin.Context) (int, any) {
 	t := c.Query("latest_time")
 	data, err := db.Feed(t)
 	if err != nil {
-		return fail, Err("数据获取出错，请稍后再试.", err)
+		return Err("数据获取出错，请稍后再试.", err)
 	}
 	res := H{
 		"video_list": data,
@@ -32,7 +32,7 @@ func VideoGet(c *gin.Context) (int, any) {
 	if len(data) > 0 {
 		res["next_time"] = data[len(data)-1].ID
 	}
-	return ok, res
+	return Ok(res)
 }
 
 // VideoAction 视频投稿
@@ -43,17 +43,17 @@ func VideoAction(c *gin.Context) (int, any) {
 	data.Token = c.PostForm("token")
 	data.Title = c.PostForm("title")
 	if err != nil || data.Token == "" {
-		return fail, ErrParam(err)
+		return ErrParam(err)
 	}
 	token, err := tokens.CheckToken(data.Token)
 	if err != nil {
-		return fail, Err("Token 错误", err)
+		return Err("Token 错误", err)
 	}
 	id, msg, err := db.VideoUpload(token.ID, data.Data, "", data.Title)
 	if err != nil {
-		return fail, Err(msg, err)
+		return Err(msg, err)
 	}
-	return ok, H{"vid": id}
+	return Ok(H{"vid": id})
 }
 
 // VideoActionUrl 视频投稿
@@ -63,20 +63,20 @@ func VideoActionUrl(c *gin.Context) (int, any) {
 
 	err := c.ShouldBindJSON(&data)
 	if err != nil || (data.ID == 0 && data.Token == "") || (data.Data == nil && data.Url == "") {
-		return fail, ErrParam(err)
+		return ErrParam(err)
 	}
 	if data.Token != "" {
 		token, err := tokens.CheckToken(data.Token)
 		if err != nil {
-			return fail, Err("Token 错误", err)
+			return Err("Token 错误", err)
 		}
 		data.ID = token.ID
 	}
 	id, msg, err := db.VideoUpload(data.ID, data.Data, data.Url, data.Title)
 	if err != nil {
-		return fail, Err(msg, err)
+		return Err(msg, err)
 	}
-	return ok, H{"vid": id}
+	return Ok(H{"vid": id})
 }
 
 // VideoList 发布列表
@@ -87,19 +87,19 @@ func VideoList(c *gin.Context) (int, any) {
 	)
 	// 参数绑定
 	if err := c.ShouldBindQuery(&reqs); err != nil {
-		return fail, ErrParam(err)
+		return ErrParam(err)
 	}
 	_, err := tokens.CheckToken(reqs.Token)
 
 	if err != nil {
 
-		return fail, Err("Token 错误", err)
+		return Err("Token 错误", err)
 	}
 
 	data, err = db.VideoList(reqs.ID)
 	if err != nil {
-		return fail, Err("网卡了,再试一次吧", err)
+		return Err("网卡了,再试一次吧", err)
 	}
 
-	return ok, H{"video_list": data}
+	return Ok(H{"video_list": data})
 }

@@ -7,12 +7,12 @@ type MyErr struct {
 	Errs []error
 }
 
-func Err(msg string, errs ...error) MyErr {
-	return MyErr{msg, errs}
+func Ok(data any) (int, any) {
+	return 0, data
 }
-func ErrParam(errs ...error) MyErr {
-	return MyErr{"参数不正确", errs}
+func Err(msg string, errs ...error) (int, MyErr) {
+	return 1, MyErr{msg, errs}
 }
-
-const fail = 1
-const ok = 0
+func ErrParam(errs ...error) (int, MyErr) {
+	return 1, MyErr{"参数不正确", errs}
+}

@@ -21,18 +21,18 @@ func FavoriteAction(c *gin.Context) (int, any) {
 	)
 	// 参数绑定
 	if err := common.Bind(c, &reqs); err != nil {
-		return fail, ErrParam(err)
+		return ErrParam(err)
 	}
 	claims, err := tokens.CheckToken(reqs.Token)
 
 	if err != nil {
-		return fail, Err("Token 错误", err)
+		return Err("Token 错误", err)
 	}
 	err = db.VideoLike(claims.ID, reqs.VideoId, reqs.ActionType)
 	if err != nil {
-		return fail, Err("网卡了,再试一次吧", err)
+		return Err("网卡了,再试一次吧", err)
 	}
-	return ok, nil
+	return Ok(nil)
 }
 
 // FavoriteList 点赞列表
@@ -43,17 +43,17 @@ func FavoriteList(c *gin.Context) (int, any) {
 	)
 	// 参数绑定
 	if err := c.ShouldBindQuery(&reqs); err != nil {
-		return fail, ErrParam(err)
+		return ErrParam(err)
 	}
 	_, err := tokens.CheckToken(reqs.Token)
 
 	if err != nil {
-		return fail, Err("Token 错误", err)
+		return Err("Token 错误", err)
 	}
 
 	data, err = db.VideoLikeList(reqs.ID)
 	if err != nil {
-		return fail, Err("网卡了,再试一次吧", err)
+		return Err("网卡了,再试一次吧", err)
 	}
-	return ok, H{"video_list": data}
+	return Ok(H{"video_list": data})
 }
