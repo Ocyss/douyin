@@ -39,4 +39,12 @@ func InitConf() {
 	if err != nil {
 		log.Fatalf("配置文件解析错误，请检查,{%s}", err)
 	}
+	go func() {
+		// 解析完在回写一次,保证配置文件格式最新
+		fileData, _ := json.MarshalIndent(conf.Conf, "", "  ")
+		err = os.WriteFile(configPath, fileData, 0666)
+		if err != nil {
+			log.Error("配置文件更新错误，请检查,{%s}", err)
+		}
+	}()
 }

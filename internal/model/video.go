@@ -21,7 +21,7 @@ type (
 		Desc          string     `json:"desc" gorm:"comment:简介"`
 		Comment       []*Comment `json:"comment,omitempty"` // 评论列表
 		// 自建字段
-		CoAuthor []*UserCreation `json:"authors,omitempty" gorm:"-"` // 联合投稿
+		CoAuthor []*User `json:"authors,omitempty" gorm:"many2many:UserCreation;"` // 联合投稿
 	}
 	// UserCreation 联合作者
 	UserCreation struct {
@@ -33,6 +33,12 @@ type (
 	}
 )
 
+func (u *Video) AfterFind(tx *gorm.DB) (err error) {
+	//if u.CoverUrl == "" {
+	//	u.CoverUrl = ""
+	//}
+	return
+}
 func init() {
 	addMigrate(&Video{})
 }

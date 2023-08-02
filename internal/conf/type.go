@@ -7,6 +7,7 @@ type Config struct {
 	Scheme    confScheme   `json:"scheme"`     // HTTPS配置
 	Database  confDatabase `json:"database"`   // 数据库配置
 	Redis     confRedis    `json:"redis"`      // Redis 缓存配置
+	Oss       confOss      `json:"oss"`        // Oss 配置(阿里云)
 	Log       confLog      `json:"log"`        // Log配置
 }
 type confScheme struct {
@@ -39,4 +40,12 @@ type confRedis struct {
 	Port     int    `json:"port"`     // 数据库端口
 	Password string `json:"password"` // 密码
 	Db       int    `json:"db"`       // 数据库编号
+}
+
+type confOss struct {
+	// 阿里云配置
+	AccessKeyID     string `json:"AccessKeyId"`
+	AccessKeySecret string `json:"AccessKeySecret"`
+	Endpoint        string `json:"Endpoint"`
+	BucketName      string `json:"BucketName"`
 }

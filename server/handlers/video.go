@@ -6,15 +6,16 @@ import (
 	"github.com/Ocyss/douyin/server/common"
 	"github.com/Ocyss/douyin/utils/tokens"
 	"github.com/gin-gonic/gin"
+	"mime/multipart"
 )
 
 type (
 	actionData struct {
-		Data  []byte `json:"data"`
-		Token string `json:"token"`
-		Title string `json:"title"`
-		Url   string `json:"url"`
-		ID    int64  `json:"id"`
+		Data  multipart.File `json:"data" form:"data"`
+		Token string         `json:"token" form:"token"`
+		Title string         `json:"title" form:"title"`
+		Url   string         `json:"url" form:"url"`
+		ID    int64          `json:"id" form:"id"`
 	}
 )
 
@@ -39,15 +40,35 @@ func VideoGet(c *gin.Context) {
 
 // VideoAction 视频投稿
 func VideoAction(c *gin.Context) {
-	// TODO: 视频投稿接口
+	var data actionData
+	file, _, err := c.Request.FormFile("data")
+	data.Data = file
+	data.Token = c.PostForm("token")
+	data.Title = c.PostForm("title")
+	if err != nil || data.Token == "" {
+		common.ErrParam(c, err)
+		return
+	}
+	token, err := tokens.CheckToken(data.Token)
+	if err != nil {
+		common.Err(c, "Token 错误", err)
+		return
+	}
+	id, msg, err := db.Action(token.ID, data.Data, "", data.Title)
+	if err != nil {
+		common.Err(c, msg, err)
+	} else {
+		common.OK(c, H{"vid": id})
+	}
 }
 
 // VideoActionUrl 视频投稿
 // 测试接口可直接指定URL，或使用ID进行投稿
 func VideoActionUrl(c *gin.Context) {
 	var data actionData
+
 	err := c.ShouldBindJSON(&data)
-	if err != nil || (data.ID == 0 && data.Token == "") || (len(data.Data) == 0 && data.Url == "") {
+	if err != nil || (data.ID == 0 && data.Token == "") || (data.Data == nil && data.Url == "") {
 		common.ErrParam(c, err)
 		return
 	}
