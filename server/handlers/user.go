@@ -85,12 +85,12 @@ func UserRegister(c *gin.Context) {
 	msg, err := db.Register(&data)
 	if err != nil {
 		common.Err(c, msg, err)
+		return
 	}
 
 	token, err := tokens.GetToken(data.ID, data.Name)
 	if err != nil {
 		common.Err(c, "抱歉，麻烦再试一次吧...", err)
-		return
 	} else {
 		common.OK(c, H{"user_id": data.ID, "token": token})
 	}

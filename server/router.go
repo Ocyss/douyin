@@ -4,8 +4,11 @@ import (
 	"github.com/Ocyss/douyin/server/handlers"
 	"github.com/Ocyss/douyin/server/middleware"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"os"
+	"strings"
 )
 
 func Init(r *gin.Engine) {
@@ -35,10 +38,10 @@ func Init(r *gin.Engine) {
 	}
 	// 互动类接口
 	{
-		router.POST("favorite/action") // 点赞操作
+		router.POST("favorite/action/", handlers.FavoriteAction) // 点赞操作
 		//router.GET("favorite/list")    // 获取喜欢列表
-		router.POST("comment/action") // 评论操作
-		router.GET("comment/list")    // 获取评论列表
+		router.POST("comment/action/") // 评论操作
+		router.GET("comment/list/")    // 获取评论列表
 	}
 	//社交类接口
 	{
@@ -52,4 +55,22 @@ func Init(r *gin.Engine) {
 			router.POST("message/action") // 发送消息
 		}
 	}
+	// 挂载 web 服务
+	r.Use(static.Serve("/", static.LocalFile("web", true)))
+	r.NoRoute(func(c *gin.Context) {
+		accept := c.Request.Header.Get("Accept")
+		flag := strings.Contains(accept, "text/html")
+		if flag {
+			content, err := os.ReadFile("web/index.html")
+			if (err) != nil {
+				c.Writer.WriteHeader(404)
+				c.Writer.WriteString("Not Found")
+				return
+			}
+			c.Writer.WriteHeader(200)
+			c.Writer.Header().Add("Accept", "text/html")
+			c.Writer.Write(content)
+			c.Writer.Flush()
+		}
+	})
 }

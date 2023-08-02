@@ -6,6 +6,7 @@ type Config struct {
 	JwtSecret string       `json:"jwt_secret"` // Jwt密钥，随机生成
 	Scheme    confScheme   `json:"scheme"`     // HTTPS配置
 	Database  confDatabase `json:"database"`   // 数据库配置
+	Redis     confRedis    `json:"redis"`      // Redis 缓存配置
 	Log       confLog      `json:"log"`        // Log配置
 }
 type confScheme struct {
@@ -31,4 +32,11 @@ type confLog struct {
 	MaxBackups int    `json:"max_backups"` // 日志最大备份数
 	MaxAge     int    `json:"max_age"`     // 日志最长时间
 	Compress   bool   `json:"compress"`    // 日志是否压缩
+}
+
+type confRedis struct {
+	Host     string `json:"host"`     // 数据库地址
+	Port     int    `json:"port"`     // 数据库端口
+	Password string `json:"password"` // 密码
+	Db       int    `json:"db"`       // 数据库编号
 }

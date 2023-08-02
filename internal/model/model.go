@@ -18,7 +18,9 @@ type Model struct {
 }
 
 func (u *Model) BeforeCreate(tx *gorm.DB) (err error) {
-	u.ID = utils.GetId()
+	if u.ID == 0 {
+		u.ID = utils.GetId()
+	}
 	return
 }
 

@@ -19,6 +19,9 @@ func Init(d *gorm.DB) {
 	}
 }
 
+func id(val int64) model.Model {
+	return model.Model{ID: val}
+}
 func GetDb() *gorm.DB {
 	return db
 }

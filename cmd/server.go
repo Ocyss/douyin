@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/Ocyss/douyin/cmd/flags"
 	"github.com/Ocyss/douyin/internal/conf"
@@ -39,7 +40,7 @@ var serverCmd = &cobra.Command{
 			} else {
 				err = srv.ListenAndServe()
 			}
-			if err != nil && err != http.ErrServerClosed {
+			if err != nil && !errors.Is(err, http.ErrServerClosed) {
 				log.Fatalf("无法启动: %s", err.Error())
 			}
 		}()

@@ -3,6 +3,8 @@ data
 main
 private
 .1024*
+/web/*
+/!web/README.md
 # project files
 .idea
 .vscode

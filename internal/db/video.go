@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"github.com/Ocyss/douyin/internal/model"
 )
 
@@ -32,4 +33,21 @@ func Action(id int64, file []byte, url, title string) (int64, string, error) {
 		return 0, "", err
 	}
 	return data.ID, "", nil
+}
+
+func VideoLike(uid, vid int64, _type int) error {
+	var err error
+	association := db.Model(&model.User{Model: id(uid)}).Association("Favorite")
+	switch _type {
+	case 1:
+		err = association.Append(&model.Video{Model: id(vid)})
+	case 2:
+		err = association.Delete(&model.Video{Model: id(vid)})
+	default:
+		err = errors.New("你看看你传的什么东西吧")
+	}
+	if err != nil {
+		return err
+	}
+	return nil
 }
