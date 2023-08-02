@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/Ocyss/douyin/internal/db"
+	"github.com/Ocyss/douyin/internal/model"
 	"github.com/Ocyss/douyin/server/common"
 	"github.com/Ocyss/douyin/utils/tokens"
 	"github.com/gin-gonic/gin"
@@ -68,5 +69,26 @@ func VideoActionUrl(c *gin.Context) {
 
 // VideoList 发布列表
 func VideoList(c *gin.Context) {
-	// TODO: 发布列表接口
+	var (
+		data []*model.Video
+		reqs userInfoReqs
+	)
+	// 参数绑定
+	if err := c.ShouldBindQuery(&reqs); err != nil {
+		common.ErrParam(c, err)
+		return
+	}
+	_, err := tokens.CheckToken(reqs.Token)
+
+	if err != nil {
+		common.Err(c, "Token 错误", err)
+		return
+	}
+
+	data, err = db.VideoList(reqs.ID)
+	if err != nil {
+		common.Err(c, "网卡了,再试一次吧", err)
+	} else {
+		common.OK(c, H{"video_list": data})
+	}
 }

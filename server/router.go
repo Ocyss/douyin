@@ -28,7 +28,7 @@ func Init(r *gin.Engine) {
 		router.GET("feed/", handlers.VideoGet)                     // 获取视频流
 		router.POST("publish/action")                              // 视频投稿
 		tester.POST("publish/actionUrl/", handlers.VideoActionUrl) // 视频投稿(测试接口)
-		//router.GET("publish/list")                                // 获取发布列表
+		router.GET("publish/list", handlers.VideoList)             // 获取发布列表
 	}
 	// 用户类接口
 	{
