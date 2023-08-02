@@ -39,20 +39,20 @@ func Init(r *gin.Engine) {
 	// 互动类接口
 	{
 		router.POST("favorite/action/", handlers.FavoriteAction) // 点赞操作
-		//router.GET("favorite/list")    // 获取喜欢列表
-		router.POST("comment/action/") // 评论操作
-		router.GET("comment/list/")    // 获取评论列表
+		router.GET("favorite/list/", handlers.FavoriteList)      // 获取喜欢列表
+		router.POST("comment/action/")                           // 评论操作
+		router.GET("comment/list/")                              // 获取评论列表
 	}
 	//社交类接口
 	{
-		router.POST("relation/action")       // 关注/取关 操作
-		router.GET("relatioin/follow/list")  // 获取用户关注列表
-		router.GET("relation/follower/list") // 获取用户粉丝列表
-		router.GET("relation/friend/list")   // 获取用户好友列表
+		router.POST("relation/action/")       // 关注/取关 操作
+		router.GET("relatioin/follow/list/")  // 获取用户关注列表
+		router.GET("relation/follower/list/") // 获取用户粉丝列表
+		router.GET("relation/friend/list/")   // 获取用户好友列表
 		// 消息类接口
 		{
-			router.GET("message/chat")    // 获取消息
-			router.POST("message/action") // 发送消息
+			router.GET("message/chat/")    // 获取消息
+			router.POST("message/action/") // 发送消息
 		}
 	}
 	// 挂载 web 服务

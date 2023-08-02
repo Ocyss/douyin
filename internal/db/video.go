@@ -51,3 +51,19 @@ func VideoLike(uid, vid int64, _type int) error {
 	}
 	return nil
 }
+
+func VideoLikeList(uid int64) ([]*model.Video, error) {
+	var data []*model.Video
+	err := db.Model(&model.User{Model: id(uid)}).Association("Favorite").Find(&data)
+	if err != nil {
+		return nil, err
+	}
+	for i := range data {
+		err = db.Preload("Author").Find(data[i]).Error
+		if err != nil {
+			return nil, err
+		}
+		data[i].IsFavorite = true
+	}
+	return data, nil
+}
