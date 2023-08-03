@@ -5,6 +5,7 @@ import (
 	"github.com/Ocyss/douyin/cmd/flags"
 	"github.com/Ocyss/douyin/internal/conf"
 	"github.com/Ocyss/douyin/internal/db"
+	"github.com/redis/go-redis/v9"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -21,7 +22,9 @@ func InitDb() {
 	var dialector gorm.Dialector
 	var dB *gorm.DB
 	var err error
+	log.Info("开始初始化 Database 服务!")
 	if flags.Memory {
+		log.Info("当前处于 Memory模式,将使用内存数据库,并清空 Redis!")
 		dialector = sqlite.Open("file::memory:?cache=shared")
 	} else {
 		database := conf.Conf.Database
@@ -64,5 +67,18 @@ func InitDb() {
 	if err != nil {
 		log.Fatalf("无法连接到数据库:%s", err.Error())
 	}
-	db.Init(dB)
+	db.InitDb(dB)
+	log.Info("初始化 Database 成功!")
+}
+
+func InitRdb() {
+	log.Info("开始初始化 Redis 服务!")
+	rconf := conf.Conf.Redis
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("%s:%d", rconf.Host, rconf.Port),
+		Password: rconf.Password,
+		DB:       rconf.Db,
+	})
+	db.InitRdb(rdb)
+	log.Info("初始化 Redis 成功!")
 }

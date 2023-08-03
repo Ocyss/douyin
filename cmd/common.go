@@ -28,6 +28,7 @@ func initServer() {
 	bootstrap.InitConf()
 	bootstrap.InitLog()
 	bootstrap.InitDb()
+	bootstrap.InitRdb()
 }
 
 // initDaemon 守护进程初始化
