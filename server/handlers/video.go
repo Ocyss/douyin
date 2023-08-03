@@ -24,6 +24,7 @@ func VideoGet(c *gin.Context) (int, any) {
 		claims *tokens.MyClaims
 		err    error
 	)
+
 	token := c.Query("token")
 	t := c.Query("latest_time")
 	if token != "" {
@@ -32,7 +33,7 @@ func VideoGet(c *gin.Context) (int, any) {
 			return Err("验证失败,请重新登录", err)
 		}
 	}
-	data, err := db.Feed(claims.ID, t)
+	data, err := db.Feed(claims.ID, c.ClientIP(), t)
 	if err != nil {
 		return Err("数据获取出错，请稍后再试.", err)
 	}

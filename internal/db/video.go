@@ -6,10 +6,11 @@ import (
 	"github.com/Ocyss/douyin/internal/model"
 	"github.com/Ocyss/douyin/utils/upload"
 	"mime/multipart"
+	"sync"
 )
 
 // Feed 获取视频流
-func Feed(uid int64, latestTime string) ([]model.Video, error) {
+func Feed(uid int64, ip string, latestTime string) ([]model.Video, error) {
 	var data []model.Video
 	if len(latestTime) != 19 {
 		latestTime = "9223372036854775806"
@@ -19,17 +20,18 @@ func Feed(uid int64, latestTime string) ([]model.Video, error) {
 	if err != nil {
 		return nil, err
 	}
-	if uid != 0 {
-		for i := range data {
-			go func() {
-				result := map[string]any{}
-				data[i].IsFavorite = db.Table("user_favorite").Where("user_id = ? AND video_id = ?", uid, data[i].ID).Take(&result).RowsAffected == 1
-				//data[i].IsFavorite = db.Raw("SELECT * FROM user_favorite WHERE user_id = ? AND video_id = ?", uid, data[i].ID).Scan(&result).RowsAffected == 1
-			}()
-			go func() {
 
-			}()
+	for i := range data {
+		var wg sync.WaitGroup
+		if uid != 0 {
+			wg.Add(1)
+			go getIsFavorite(&wg, uid, data[i].ID, &data[i].IsFavorite) // 是否点赞
 		}
+		wg.Add(3)
+		go getFavoriteCount(&wg, data[i].ID, &data[i].FavoriteCount) // 喜欢总数
+		go getCommentCount(&wg, data[i].ID, &data[i].CommentCount)   // 评论总数
+		go setPlayCount(&wg, ip, data[i].ID, &data[i].PlayCount)     // 播放量
+		wg.Wait()
 	}
 	return data, nil
 }
