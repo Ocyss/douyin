@@ -9,7 +9,7 @@ import (
 )
 
 // Feed 获取视频流
-func Feed(latestTime string) ([]model.Video, error) {
+func Feed(uid int64, latestTime string) ([]model.Video, error) {
 	var data []model.Video
 	if len(latestTime) != 19 {
 		latestTime = "9223372036854775806"
@@ -18,6 +18,18 @@ func Feed(latestTime string) ([]model.Video, error) {
 	err := db.Where("id < ?", latestTime).Order("id DESC").Limit(5).Find(&data).Error
 	if err != nil {
 		return nil, err
+	}
+	if uid != 0 {
+		for i := range data {
+			go func() {
+				result := map[string]any{}
+				data[i].IsFavorite = db.Table("user_favorite").Where("user_id = ? AND video_id = ?", uid, data[i].ID).Take(&result).RowsAffected == 1
+				//data[i].IsFavorite = db.Raw("SELECT * FROM user_favorite WHERE user_id = ? AND video_id = ?", uid, data[i].ID).Scan(&result).RowsAffected == 1
+			}()
+			go func() {
+
+			}()
+		}
 	}
 	return data, nil
 }

@@ -26,7 +26,7 @@ func Init(r *gin.Engine) {
 	tester.Use(middleware.Test())
 	// 视频类接口
 	{
-		newRouter(router, "GET", "feed/", handlers.VideoGet)                     // 获取视频流
+		newRouter(router, "GET", "feed", handlers.VideoGet)                      // 获取视频流
 		newRouter(router, "POST", "publish/action/", handlers.VideoAction)       // 视频投稿
 		newRouter(tester, "POST", "publish/actionUrl/", handlers.VideoActionUrl) // 视频投稿(测试接口)
 		newRouter(router, "GET", "publish/list/", handlers.VideoList)            // 获取发布列表

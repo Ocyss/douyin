@@ -20,12 +20,23 @@ type (
 
 // VideoGet 视频流获取
 func VideoGet(c *gin.Context) (int, any) {
-	//token := c.Query("token")
+	var (
+		claims *tokens.MyClaims
+		err    error
+	)
+	token := c.Query("token")
 	t := c.Query("latest_time")
-	data, err := db.Feed(t)
+	if token != "" {
+		claims, err = tokens.CheckToken(token)
+		if err != nil {
+			return Err("验证失败,请重新登录", err)
+		}
+	}
+	data, err := db.Feed(claims.ID, t)
 	if err != nil {
 		return Err("数据获取出错，请稍后再试.", err)
 	}
+
 	res := H{
 		"video_list": data,
 	}
