@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"github.com/Ocyss/douyin/internal/db"
 	"github.com/Ocyss/douyin/internal/model"
 	"github.com/Ocyss/douyin/server/common"
@@ -8,6 +9,7 @@ import (
 	"github.com/Ocyss/douyin/utils/checks"
 	"github.com/Ocyss/douyin/utils/tokens"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type (
@@ -83,7 +85,12 @@ func UserRegister(c *gin.Context) (int, any) {
 
 	token, err := tokens.GetToken(data.ID, data.Name)
 	if err != nil {
-		return Err("抱歉，麻烦再试一次吧...", err)
+		switch {
+		case errors.Is(err, gorm.ErrDuplicatedKey):
+			return Err("该用户名已被使用!", err)
+		default:
+			return Err("抱歉，麻烦再试一次吧...", err)
+		}
 	}
 	return Ok(H{"user_id": data.ID, "token": token})
 }
