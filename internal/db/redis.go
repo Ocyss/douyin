@@ -12,19 +12,32 @@ import (
 
 var playCountUpdates = make(chan string, 35)
 
-// getFavoriteCount 视频的点赞总数
-func getFavoriteCount(wg *sync.WaitGroup, vid int64, val *int64) {
-	defer wg.Done()
+func getVideoFavoriteCountKey(vid int64) string {
 	var builder strings.Builder
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer cancel()
 	builder.Grow(50)
 	builder.WriteString("video:favorite_count/")
 	builder.WriteString(strconv.FormatInt(vid, 10))
-	favoriteCount, err := rdb.Get(ctx, builder.String()).Int64()
+	return builder.String()
+}
+func getVideoCommentCountKey(vid int64) string {
+	var builder strings.Builder
+	builder.Grow(50)
+	builder.WriteString("video:comment_count/")
+	builder.WriteString(strconv.FormatInt(vid, 10))
+	return builder.String()
+}
+
+// getFavoriteCount 视频的点赞总数
+func getFavoriteCount(wg *sync.WaitGroup, vid int64, val *int64) {
+	defer wg.Done()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	key := getVideoFavoriteCountKey(vid)
+	favoriteCount, err := rdb.Get(ctx, key).Int64()
 	if err == redis.Nil {
 		db.Table("user_favorite").Where("video_id = ?", vid).Count(&favoriteCount)
-		_ = rdb.Set(ctx, builder.String(), favoriteCount, 300*time.Second)
+		_ = rdb.Set(ctx, key, favoriteCount, 300*time.Second)
 	}
 	*val = favoriteCount
 }
@@ -32,16 +45,13 @@ func getFavoriteCount(wg *sync.WaitGroup, vid int64, val *int64) {
 // getCommentCount 视频的评论总数
 func getCommentCount(wg *sync.WaitGroup, vid int64, val *int64) {
 	defer wg.Done()
-	var builder strings.Builder
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
-	builder.Grow(50)
-	builder.WriteString("video:comment_count/")
-	builder.WriteString(strconv.FormatInt(vid, 10))
-	CommentCount, err := rdb.Get(ctx, builder.String()).Int64()
+	key := getVideoCommentCountKey(vid)
+	CommentCount, err := rdb.Get(ctx, key).Int64()
 	if err == redis.Nil {
 		db.Model(&model.Comment{}).Where("video_id = ?", vid).Count(&CommentCount)
-		_ = rdb.Set(ctx, builder.String(), CommentCount, 300*time.Second)
+		_ = rdb.Set(ctx, key, CommentCount, 300*time.Second)
 	}
 	*val = CommentCount
 }
