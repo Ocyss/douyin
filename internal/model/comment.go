@@ -1,5 +1,10 @@
 package model
 
+import (
+	"github.com/Ocyss/douyin/utils"
+	"gorm.io/gorm"
+)
+
 type (
 	// Comment 评论表
 	Comment struct {
@@ -15,6 +20,12 @@ type (
 	}
 )
 
+func (u *Comment) BeforeCreate(tx *gorm.DB) (err error) {
+	if u.ID == 0 {
+		u.ID = utils.GetId(2, 20230724)
+	}
+	return
+}
 func init() {
 	addMigrate(&Comment{})
 }

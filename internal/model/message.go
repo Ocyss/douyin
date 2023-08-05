@@ -1,5 +1,10 @@
 package model
 
+import (
+	"github.com/Ocyss/douyin/utils"
+	"gorm.io/gorm"
+)
+
 type (
 	// Message 消息表
 	Message struct {
@@ -12,6 +17,13 @@ type (
 		//CreateTime string `json:"create_time" gorm:"comment:消息创建时间"`
 	}
 )
+
+func (u *Message) BeforeCreate(tx *gorm.DB) (err error) {
+	if u.ID == 0 {
+		u.ID = utils.GetId(3, 114514)
+	}
+	return
+}
 
 func init() {
 	addMigrate(&Message{})

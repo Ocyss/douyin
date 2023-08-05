@@ -1,5 +1,10 @@
 package model
 
+import (
+	"github.com/Ocyss/douyin/utils"
+	"gorm.io/gorm"
+)
+
 type (
 	// User 用户信息表
 	User struct {
@@ -29,6 +34,13 @@ type (
 		MsgType bool   `json:"msg_type,number" gorm:"comment:消息类型"` // 0 => 当前请求用户接收的消息， 1 => 当前请求用户发送的消息
 	}
 )
+
+func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+	if u.ID == 0 {
+		u.ID = utils.GetId(2, 114514)
+	}
+	return
+}
 
 func init() {
 	addMigrate(&User{})

@@ -8,10 +8,10 @@ import (
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 // GetId 获取ID
-func GetId() int64 {
+func GetId(a, b int64) int64 {
 	// 使用纳秒时间戳，保证递增
 	now := time.Now()
-	return now.UnixNano()*4 - 20230724
+	return now.UnixNano()*a - b
 }
 
 func RandString(n int) string {

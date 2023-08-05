@@ -1,7 +1,6 @@
 package model
 
 import (
-	"github.com/Ocyss/douyin/utils"
 	"gorm.io/gorm"
 	"time"
 )
@@ -18,9 +17,6 @@ type Model struct {
 }
 
 func (u *Model) BeforeCreate(tx *gorm.DB) (err error) {
-	if u.ID == 0 {
-		u.ID = utils.GetId()
-	}
 	return
 }
 

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/Ocyss/douyin/utils"
 	"gorm.io/gorm"
 	"time"
 )
@@ -40,6 +41,14 @@ func (u *Video) AfterFind(tx *gorm.DB) (err error) {
 	//}
 	return
 }
+
+func (u *Video) BeforeCreate(tx *gorm.DB) (err error) {
+	if u.ID == 0 {
+		u.ID = utils.GetId(3, 20230724)
+	}
+	return
+}
+
 func init() {
 	addMigrate(&Video{})
 }

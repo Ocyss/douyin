@@ -41,7 +41,7 @@ func Init(r *gin.Engine) {
 	{
 		newRouter(router, "POST", "favorite/action/", handlers.FavoriteAction) // 点赞操作
 		newRouter(router, "GET", "favorite/list/", handlers.FavoriteList)      // 获取喜欢列表
-		newRouter(router, "POST", "comment/action/", nil)                      // 评论操作
+		newRouter(router, "POST", "comment/action/", handlers.CommentAction)   // 评论操作
 		newRouter(router, "GET", "comment/list/", nil)                         // 获取评论列表
 	}
 	//社交类接口
