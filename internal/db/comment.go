@@ -14,3 +14,12 @@ func CommentPush(uid, vid int64, content string) (*model.Comment, error) {
 func CommentDel(cid int64) error {
 	return db.Delete(&model.Comment{}, cid).Error
 }
+
+func CommentGet(vid int64) ([]*model.Comment, error) {
+	var data []*model.Comment
+	err := db.Preload("User").Where("video_id = ?", vid).Find(&data).Error
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}

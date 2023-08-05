@@ -4,7 +4,7 @@ import "testing"
 
 func TestGetId(t *testing.T) {
 	for i := 0; i < 10; i++ {
-		t.Log("ID获取测试: ", GetId(2))
+		t.Log("ID获取测试: ", GetId(2, 20230724))
 	}
 }
 

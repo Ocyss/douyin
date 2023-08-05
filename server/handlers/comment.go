@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"github.com/Ocyss/douyin/internal/db"
 	"github.com/Ocyss/douyin/internal/model"
 	"github.com/Ocyss/douyin/server/common"
@@ -9,11 +10,11 @@ import (
 )
 
 type commentReqs struct {
-	Token       string `form:"token" json:"token" binding:"required"`             // 用户鉴权token
-	VideoId     int64  `form:"video_id" json:"video_id" binding:"required"`       // 视频id
-	ActionType  int32  `form:"action_type" json:"action_type" binding:"required"` // 1-发布评论，2-删除评论
-	CommentText string `form:"comment_text" json:"comment_text"`                  // 用户填写的评论内容
-	CommentId   int64  `form:"comment_id" json:"comment_id"`                      // 要删除的评论id
+	Token       string `form:"token" json:"token" binding:"required"`       // 用户鉴权token
+	VideoId     int64  `form:"video_id" json:"video_id" binding:"required"` // 视频id
+	ActionType  int    `form:"action_type" json:"action_type"`              // 1-发布评论，2-删除评论
+	CommentText string `form:"comment_text" json:"comment_text"`            // 用户填写的评论内容
+	CommentId   int64  `form:"comment_id" json:"comment_id"`                // 要删除的评论id
 }
 
 // CommentAction 评论操作
@@ -37,7 +38,7 @@ func CommentAction(c *gin.Context) (int, any) {
 	case 2:
 		err = db.CommentDel(reqs.CommentId)
 	default:
-		return ErrParam()
+		return ErrParam(errors.New("不合法的 ActionType"))
 	}
 	if err != nil {
 		return Err("请再试一次吧", err)
@@ -46,6 +47,21 @@ func CommentAction(c *gin.Context) (int, any) {
 }
 
 // CommentList 评论列表
-func CommentList(c *gin.Context) {
-	// TODO: 评论列表接口
+func CommentList(c *gin.Context) (int, any) {
+	var (
+		reqs commentReqs
+	)
+	// 参数绑定
+	if err := common.Bind(c, &reqs); err != nil {
+		return ErrParam(err)
+	}
+	_, err := tokens.CheckToken(reqs.Token)
+	if err != nil {
+		return Err("Token 错误", err)
+	}
+	data, err := db.CommentGet(reqs.VideoId)
+	if err != nil {
+		return Err("稍后试试.", err)
+	}
+	return Ok(H{"comment_list": data})
 }
