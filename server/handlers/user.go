@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+
 	"github.com/Ocyss/douyin/internal/db"
 	"github.com/Ocyss/douyin/internal/model"
 	"github.com/Ocyss/douyin/server/common"
@@ -31,8 +32,8 @@ type (
 		FollowerCount   int64  `json:"follower_count"`   // 粉丝总数
 		IsFollow        bool   `json:"is_follow"`        // 是否关注
 		Avatar          string `json:"avatar"`           // 用户头像
-		BackgroundImage string `json:"background_image"` //用户个人页顶部大图
-		Signature       string `json:"signature"`        //个人简介
+		BackgroundImage string `json:"background_image"` // 用户个人页顶部大图
+		Signature       string `json:"signature"`        // 个人简介
 		WorkCount       int64  `json:"work_count"`       // 作品数量
 		TotalFavorited  int64  `json:"total_favorited"`  // 获赞数量
 		FavoriteCount   int64  `json:"favorite_count"`   // 点赞数量
@@ -41,14 +42,12 @@ type (
 
 // UserLogin 用户登陆
 func UserLogin(c *gin.Context) (int, any) {
-	var (
-		reqs userLogRegReqs
-	)
+	var reqs userLogRegReqs
 	// 参数绑定
 	if err := common.Bind(c, &reqs); err != nil {
 		return ErrParam(err)
 	}
-	if msg := checks.ValidateInput(4, 32, reqs.Name, reqs.Pawd); len(msg) > 0 {
+	if msg := checks.ValidateInput(5, 32, reqs.Name, reqs.Pawd); len(msg) > 0 {
 		return Err("账户或者密码" + msg)
 	}
 
@@ -73,7 +72,7 @@ func UserRegister(c *gin.Context) (int, any) {
 	if err := common.Bind(c, &reqs); err != nil {
 		return ErrParam(err)
 	}
-	if msg := checks.ValidateInput(4, 32, reqs.Name, reqs.Pawd); len(msg) > 0 {
+	if msg := checks.ValidateInput(5, 32, reqs.Name, reqs.Pawd); len(msg) > 0 {
 		return Err("账户或者密码" + msg)
 	}
 	_ = utils.Merge(&data, reqs)
@@ -107,7 +106,6 @@ func UserInfo(c *gin.Context) (int, any) {
 	}
 
 	_, err := tokens.CheckToken(reqs.Token)
-
 	if err != nil {
 		return Err("Token 错误", err)
 	}

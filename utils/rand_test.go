@@ -1,11 +1,17 @@
 package utils
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func TestGetId(t *testing.T) {
 	for i := 0; i < 10; i++ {
-		t.Log("ID获取测试: ", GetId(2, 20230724))
+		go func() {
+			t.Log("ID获取测试: ", GetId(2, 20230724))
+		}()
 	}
+	time.Sleep(3 * time.Second)
 }
 
 func TestRandString(t *testing.T) {

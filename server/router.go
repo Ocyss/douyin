@@ -1,15 +1,16 @@
 package server
 
 import (
+	"net/http"
+	"os"
+	"strings"
+
 	"github.com/Ocyss/douyin/server/handlers"
 	"github.com/Ocyss/douyin/server/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"net/http"
-	"os"
-	"strings"
 )
 
 func Init(r *gin.Engine) {
@@ -22,8 +23,7 @@ func Init(r *gin.Engine) {
 	})
 
 	router := r.Group("douyin")
-	tester := r.Group("douyin")
-	tester.Use(middleware.Test())
+	tester := r.Group("douyin", middleware.Test())
 	// 视频类接口
 	{
 		newRouter(router, "GET", "feed", handlers.VideoGet)                      // 获取视频流
@@ -44,7 +44,7 @@ func Init(r *gin.Engine) {
 		newRouter(router, "POST", "comment/action/", handlers.CommentAction)   // 评论操作
 		newRouter(router, "GET", "comment/list/", handlers.CommentList)        // 获取评论列表
 	}
-	//社交类接口
+	// 社交类接口
 	{
 		newRouter(router, "POST", "relation/action/", nil)       // 关注/取关 操作
 		newRouter(router, "GET", "relatioin/follow/list/", nil)  // 获取用户关注列表
@@ -52,8 +52,8 @@ func Init(r *gin.Engine) {
 		newRouter(router, "GET", "relation/friend/list/", nil)   // 获取用户好友列表
 		// 消息类接口
 		{
-			newRouter(router, "GET", "message/chat/", nil)    // 获取消息
-			newRouter(router, "POST", "message/action/", nil) // 发送消息
+			newRouter(router, "GET", "message/chat/", handlers.MessageChat)      // 获取消息
+			newRouter(router, "POST", "message/action/", handlers.MessageAction) // 发送消息
 		}
 	}
 	// 挂载 web 服务

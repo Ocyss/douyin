@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+
 	"github.com/Ocyss/douyin/internal/db"
 	"github.com/Ocyss/douyin/internal/model"
 	"github.com/Ocyss/douyin/server/common"
@@ -48,9 +49,7 @@ func CommentAction(c *gin.Context) (int, any) {
 
 // CommentList 评论列表
 func CommentList(c *gin.Context) (int, any) {
-	var (
-		reqs commentReqs
-	)
+	var reqs commentReqs
 	// 参数绑定
 	if err := common.Bind(c, &reqs); err != nil {
 		return ErrParam(err)
