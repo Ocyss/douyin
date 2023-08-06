@@ -36,7 +36,7 @@ func RelationAction(fid, tid int64, ActionType int) error {
 
 func RelationFollowGet(uid int64) ([]*model.User, error) {
 	var data []*model.User
-	err := db.Model(&model.User{Model: id(uid)}).Association("Follow").Find(&data)
+	err := db.Set("user_id", uid).Model(&model.User{Model: id(uid)}).Association("Follow").Find(&data)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func RelationFollowGet(uid int64) ([]*model.User, error) {
 
 func RelationFollowerGet(uid int64) ([]*model.User, error) {
 	var data []*model.User
-	err := db.Model(&model.User{Model: id(uid)}).Association("Follower").Find(&data)
+	err := db.Set("user_id", uid).Model(&model.User{Model: id(uid)}).Association("Follower").Find(&data)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func RelationFollowerGet(uid int64) ([]*model.User, error) {
 
 func RelationFriendGet(uid int64) ([]*model.User, error) {
 	var data []*model.User
-	err := db.Model(&model.User{Model: id(uid)}).Association("Friend").Find(&data)
+	err := db.Set("user_id", uid).Model(&model.User{Model: id(uid)}).Association("Friend").Find(&data)
 	if err != nil {
 		return nil, err
 	}

@@ -17,7 +17,7 @@ func Feed(uid int64, ip string, latestTime string) ([]model.Video, error) {
 		latestTime = "9223372036854775806"
 	}
 	// t := time.Unix(0, latestTime*int64(time.Millisecond))
-	err := db.Preload("Author").Where("id < ?", latestTime).Order("id DESC").Limit(5).Find(&data).Error
+	err := db.Set("user_id", uid).Preload("Author").Where("id < ?", latestTime).Order("id DESC").Limit(5).Find(&data).Error
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func VideoLike(uid, vid int64, _type int) error {
 // VideoLikeList 获取喜欢列表
 func VideoLikeList(uid int64) ([]*model.Video, error) {
 	var data []*model.Video
-	err := db.Model(&model.User{Model: id(uid)}).Association("Favorite").Find(&data)
+	err := db.Set("user_id", uid).Model(&model.User{Model: id(uid)}).Association("Favorite").Find(&data)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ func VideoLikeList(uid int64) ([]*model.Video, error) {
 // VideoList 获取作品列表
 func VideoList(uid int64) ([]*model.Video, error) {
 	var data []*model.Video
-	err := db.Model(&model.User{Model: id(uid)}).Association("Videos").Find(&data)
+	err := db.Set("user_id", uid).Model(&model.User{Model: id(uid)}).Association("Videos").Find(&data)
 	if err != nil {
 		return nil, err
 	}

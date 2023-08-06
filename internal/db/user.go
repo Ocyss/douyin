@@ -43,7 +43,7 @@ func Login(user, pawd string) (data *model.User, msg string, err error) {
 
 func UserInfo(id int64) (data model.User, msg string, err error) {
 	data.ID = id
-	err = db.Find(&data).Error
+	err = db.Set("user_id", id).Find(&data).Error
 	if err != nil {
 		msg = "抱歉,请稍后再试"
 	}
