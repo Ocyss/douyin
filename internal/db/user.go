@@ -22,20 +22,20 @@ func Register(data *model.User) (msg string, err error) {
 
 func Login(user, pawd string) (data *model.User, msg string, err error) {
 	data = new(model.User)
-	//根据用户名获取对应的全部数据
+	// 根据用户名获取对应的全部数据
 	err = db.Where("name = ?", user).Find(&data).Error
 	if err != nil {
 		msg = "没有此用户名~"
 		return
 	}
-	//进行哈希值效验密码是否正确
+	// 进行哈希值效验密码是否正确
 	newHash, err := passlib.Verify(pawd, data.Pawd)
 	if err != nil {
 		msg = "用户名或者密码不正确!"
 		return
 	}
 	if newHash != "" {
-		//登陆成功，判断是否需要更换哈希值
+		// 登陆成功，判断是否需要更换哈希值
 		db.Where(data).Update("pawd", newHash)
 	}
 	return

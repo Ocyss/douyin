@@ -2,8 +2,9 @@ package db
 
 import (
 	"context"
-	"github.com/Ocyss/douyin/internal/model"
 	"time"
+
+	"github.com/Ocyss/douyin/internal/model"
 )
 
 func CommentPush(uid, vid int64, content string) (*model.Comment, error) {

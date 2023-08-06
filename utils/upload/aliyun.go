@@ -2,16 +2,17 @@ package upload
 
 import (
 	"fmt"
+	"io"
+
 	"github.com/Ocyss/douyin/internal/conf"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"io"
 )
 
 func Aliyun(uploadName string, file io.Reader) (string, error) {
-	var AliyunAccessKeyId = conf.Conf.Oss.AccessKeyID
-	var AliyunAccessKeySecret = conf.Conf.Oss.AccessKeySecret
-	var AliyunEndpoint = conf.Conf.Oss.Endpoint
-	var AliyunBucketName = conf.Conf.Oss.BucketName
+	AliyunAccessKeyId := conf.Conf.Oss.AccessKeyID
+	AliyunAccessKeySecret := conf.Conf.Oss.AccessKeySecret
+	AliyunEndpoint := conf.Conf.Oss.Endpoint
+	AliyunBucketName := conf.Conf.Oss.BucketName
 
 	client, err := oss.New(AliyunEndpoint, AliyunAccessKeyId, AliyunAccessKeySecret)
 	if err != nil {
@@ -26,6 +27,6 @@ func Aliyun(uploadName string, file io.Reader) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	//拼接链接,默认使用https
+	// 拼接链接,默认使用https
 	return fmt.Sprintf("https://%s.%s/%s", AliyunBucketName, AliyunEndpoint, uploadName), nil
 }

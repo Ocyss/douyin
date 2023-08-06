@@ -1,17 +1,20 @@
 package cmd
 
 import (
+	"os"
+	"path/filepath"
+	"strconv"
+
 	"github.com/Ocyss/douyin/cmd/flags"
 	"github.com/Ocyss/douyin/internal/bootstrap"
 	"github.com/Ocyss/douyin/utils"
 	"github.com/sirupsen/logrus"
-	"os"
-	"path/filepath"
-	"strconv"
 )
 
-var pid = -1
-var pidFile string
+var (
+	pid     = -1
+	pidFile string
+)
 
 // initServer 初始化服务
 func initServer() {

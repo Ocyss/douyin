@@ -1,14 +1,17 @@
 package common
 
 import (
+	"net/http"
+
 	"github.com/Ocyss/douyin/cmd/flags"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 // 2023-08-02 20:28:15 决定废弃此方案,重新封装路由
-const statusOk = 0
-const statusErr = 1
+const (
+	statusOk  = 0
+	statusErr = 1
+)
 
 // OK 成功的请求
 func OK(c *gin.Context, data ...map[string]any) {

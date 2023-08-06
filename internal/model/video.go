@@ -1,9 +1,10 @@
 package model
 
 import (
+	"time"
+
 	"github.com/Ocyss/douyin/utils"
 	"gorm.io/gorm"
-	"time"
 )
 
 type (
@@ -29,7 +30,7 @@ type (
 	UserCreation struct {
 		VideoID   int64  `json:"video_id,omitempty" gorm:"primaryKey"`
 		UserID    int64  `json:"author_id" gorm:"primaryKey"`
-		Type      string `json:"type" gorm:"comment:创作者类型"` //Up主,参演，剪辑，录像，道具，编剧，打酱油
+		Type      string `json:"type" gorm:"comment:创作者类型"` // Up主,参演，剪辑，录像，道具，编剧，打酱油
 		CreatedAt time.Time
 		DeletedAt gorm.DeletedAt `json:"-"`
 	}

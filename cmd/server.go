@@ -4,17 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"github.com/Ocyss/douyin/cmd/flags"
 	"github.com/Ocyss/douyin/internal/conf"
 	"github.com/Ocyss/douyin/server"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 var serverCmd = &cobra.Command{

@@ -3,10 +3,11 @@ package db
 import (
 	"errors"
 	"fmt"
-	"github.com/Ocyss/douyin/internal/model"
-	"github.com/Ocyss/douyin/utils/upload"
 	"mime/multipart"
 	"sync"
+
+	"github.com/Ocyss/douyin/internal/model"
+	"github.com/Ocyss/douyin/utils/upload"
 )
 
 // Feed 获取视频流
@@ -15,7 +16,7 @@ func Feed(uid int64, ip string, latestTime string) ([]model.Video, error) {
 	if len(latestTime) != 19 {
 		latestTime = "9223372036854775806"
 	}
-	//t := time.Unix(0, latestTime*int64(time.Millisecond))
+	// t := time.Unix(0, latestTime*int64(time.Millisecond))
 	err := db.Preload("Author").Where("id < ?", latestTime).Order("id DESC").Limit(5).Find(&data).Error
 	if err != nil {
 		return nil, err
@@ -38,7 +39,7 @@ func Feed(uid int64, ip string, latestTime string) ([]model.Video, error) {
 
 // VideoUpload 视频投稿
 func VideoUpload(id int64, file multipart.File, url, title string) (int64, string, error) {
-	var data = model.Video{
+	data := model.Video{
 		AuthorID: id,
 		PlayUrl:  url,
 		Title:    title,
@@ -51,7 +52,7 @@ func VideoUpload(id int64, file multipart.File, url, title string) (int64, strin
 		return 0, "", err
 	}
 	if file != nil {
-		//reader := bytes.NewReader(file)
+		// reader := bytes.NewReader(file)
 		url, err := upload.Aliyun(fmt.Sprintf("t/%d.mp4", data.ID), file)
 		if err != nil {
 			tx.Rollback()

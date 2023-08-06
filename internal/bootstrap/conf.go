@@ -2,12 +2,13 @@ package bootstrap
 
 import (
 	"encoding/json"
+	"os"
+	"path/filepath"
+
 	"github.com/Ocyss/douyin/cmd/flags"
 	"github.com/Ocyss/douyin/internal/conf"
 	"github.com/Ocyss/douyin/utils"
 	log "github.com/sirupsen/logrus"
-	"os"
-	"path/filepath"
 )
 
 var configPath string
@@ -18,14 +19,14 @@ func InitConf() {
 		// 配置文件不存在，创建默认配置
 		log.Info("没检测到配置文件，将进行初始化 config.json.")
 		basePath := filepath.Dir(configPath)
-		err := os.MkdirAll(basePath, 0766)
+		err := os.MkdirAll(basePath, 0o766)
 		if err != nil {
 			log.Fatalf("无法创建文件夹, %s", err)
 		}
 		conf.Conf = conf.DefaultConfig()
 		conf.Conf.JwtSecret = utils.RandString(17)
 		defaultData, _ := json.MarshalIndent(conf.Conf, "", "  ")
-		err = os.WriteFile(configPath, defaultData, 0666)
+		err = os.WriteFile(configPath, defaultData, 0o666)
 		if err != nil {
 			log.Fatalf("配置文件写入错误，请检查,{%s}", err)
 		}
@@ -42,7 +43,7 @@ func InitConf() {
 	go func() {
 		// 解析完在回写一次,保证配置文件格式最新
 		fileData, _ := json.MarshalIndent(conf.Conf, "", "  ")
-		err = os.WriteFile(configPath, fileData, 0666)
+		err = os.WriteFile(configPath, fileData, 0o666)
 		if err != nil {
 			log.Error("配置文件更新错误，请检查,{%s}", err)
 		}

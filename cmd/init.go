@@ -8,7 +8,6 @@ var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "初始化配置",
 	Run: func(cmd *cobra.Command, args []string) {
-
 	},
 }
 

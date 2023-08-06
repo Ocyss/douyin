@@ -2,12 +2,13 @@ package db
 
 import (
 	"context"
-	"github.com/Ocyss/douyin/internal/model"
-	"github.com/redis/go-redis/v9"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/Ocyss/douyin/internal/model"
+	"github.com/redis/go-redis/v9"
 )
 
 var playCountUpdates = make(chan string, 35)
@@ -19,6 +20,7 @@ func getVideoFavoriteCountKey(vid int64) string {
 	builder.WriteString(strconv.FormatInt(vid, 10))
 	return builder.String()
 }
+
 func getVideoCommentCountKey(vid int64) string {
 	var builder strings.Builder
 	builder.Grow(50)
@@ -84,5 +86,5 @@ func getIsFavorite(wg *sync.WaitGroup, uid, vid int64, val *bool) {
 	defer wg.Done()
 	result := map[string]any{}
 	*val = db.Table("user_favorite").Where("user_id = ? AND video_id = ?", uid, vid).Take(&result).RowsAffected == 1
-	//data[i].IsFavorite = db.Raw("SELECT * FROM user_favorite WHERE user_id = ? AND video_id = ?", uid, data[i].ID).Scan(&result).RowsAffected == 1
+	// data[i].IsFavorite = db.Raw("SELECT * FROM user_favorite WHERE user_id = ? AND video_id = ?", uid, data[i].ID).Scan(&result).RowsAffected == 1
 }

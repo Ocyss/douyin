@@ -2,12 +2,13 @@ package bootstrap
 
 import (
 	"fmt"
+	"io"
+	"os"
+
 	"github.com/Ocyss/douyin/cmd/flags"
 	"github.com/Ocyss/douyin/internal/conf"
 	"github.com/natefinch/lumberjack"
 	log "github.com/sirupsen/logrus"
-	"io"
-	"os"
 )
 
 func InitLog() {

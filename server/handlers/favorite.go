@@ -16,15 +16,12 @@ type actionReqs struct {
 
 // FavoriteAction 点赞
 func FavoriteAction(c *gin.Context) (int, any) {
-	var (
-		reqs actionReqs
-	)
+	var reqs actionReqs
 	// 参数绑定
 	if err := common.Bind(c, &reqs); err != nil {
 		return ErrParam(err)
 	}
 	claims, err := tokens.CheckToken(reqs.Token)
-
 	if err != nil {
 		return Err("Token 错误", err)
 	}
@@ -46,7 +43,6 @@ func FavoriteList(c *gin.Context) (int, any) {
 		return ErrParam(err)
 	}
 	_, err := tokens.CheckToken(reqs.Token)
-
 	if err != nil {
 		return Err("Token 错误", err)
 	}

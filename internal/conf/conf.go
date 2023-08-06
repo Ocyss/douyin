@@ -1,8 +1,6 @@
 package conf
 
-var (
-	Conf Config
-)
+var Conf Config
 
 func DefaultConfig() Config {
 	return Config{

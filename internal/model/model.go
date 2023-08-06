@@ -1,8 +1,9 @@
 package model
 
 import (
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // 总结：如果需要查出所有关联的数据就用Preload，查一条关联数据用Related
@@ -23,6 +24,7 @@ func (u *Model) BeforeCreate(tx *gorm.DB) (err error) {
 func GetMigrate() []any {
 	return migrate
 }
+
 func addMigrate(model ...any) {
 	migrate = append(migrate, model...)
 }

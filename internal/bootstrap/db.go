@@ -2,6 +2,10 @@ package bootstrap
 
 import (
 	"fmt"
+	stdlog "log"
+	"strings"
+	"time"
+
 	"github.com/Ocyss/douyin/cmd/flags"
 	"github.com/Ocyss/douyin/internal/conf"
 	"github.com/Ocyss/douyin/internal/db"
@@ -13,9 +17,6 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	stdlog "log"
-	"strings"
-	"time"
 )
 
 func InitDb() {

@@ -2,17 +2,20 @@ package db
 
 import (
 	"context"
+	"reflect"
+	"time"
+
 	"github.com/Ocyss/douyin/cmd/flags"
 	"github.com/Ocyss/douyin/internal/model"
 	"github.com/redis/go-redis/v9"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	"reflect"
-	"time"
 )
 
-var db *gorm.DB
-var rdb *redis.Client
+var (
+	db  *gorm.DB
+	rdb *redis.Client
+)
 
 func InitDb(d *gorm.DB) {
 	db = d
@@ -31,6 +34,7 @@ func InitDb(d *gorm.DB) {
 		log.Fatalf("自定义连接表设置失败,User: %s", err)
 	}
 }
+
 func InitRdb(r *redis.Client) {
 	rdb = r
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -48,9 +52,11 @@ func InitRdb(r *redis.Client) {
 func id(val int64) model.Model {
 	return model.Model{ID: val}
 }
+
 func GetDb() *gorm.DB {
 	return db
 }
+
 func GetRdb() *redis.Client {
 	return rdb
 }

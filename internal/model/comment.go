@@ -14,7 +14,7 @@ type (
 		User    User   `json:"user" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 		Video   Video  `json:"video" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 		Content string `json:"content" gorm:"comment:评论内容"`
-		//create_date string // 评论发布日期，格式 mm-dd
+		// create_date string // 评论发布日期，格式 mm-dd
 		// 自建字段
 		ReplyID int64 `json:"reply_id" gorm:"index;comment:回复ID"`
 	}
@@ -26,6 +26,7 @@ func (u *Comment) BeforeCreate(tx *gorm.DB) (err error) {
 	}
 	return
 }
+
 func init() {
 	addMigrate(&Comment{})
 }
