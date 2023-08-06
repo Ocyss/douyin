@@ -47,7 +47,8 @@ func (u *User) AfterFind(tx *gorm.DB) (err error) {
 		result := map[string]any{}
 		u.IsFollow = tx.Table("user_follower").Where("follower_id = ? AND user_id = ?", uid, u.ID).Take(&result).RowsAffected == 1
 	}
-
+	tx.Table("user_follow").Where("user_id = ?", u.ID).Count(&u.FollowCount)
+	tx.Table("user_follower").Where("user_id = ?", u.ID).Count(&u.FollowerCount)
 	return
 }
 

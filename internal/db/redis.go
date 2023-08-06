@@ -15,31 +15,43 @@ var (
 	videoFavoriteCountKey = make([]byte, 0, 50)
 	videoCommentCountKey  = make([]byte, 0, 50)
 	videoPlayCountKey     = make([]byte, 0, 50)
+	userFollowCountKey    = make([]byte, 0, 50)
+	userFollowerCountKey  = make([]byte, 0, 50)
 )
 
 func init() {
 	videoFavoriteCountKey = append(videoFavoriteCountKey, "video:favorite_count/"...)
 	videoCommentCountKey = append(videoCommentCountKey, "video:comment_count/"...)
 	videoPlayCountKey = append(videoPlayCountKey, "video:play_count/"...)
+	userFollowCountKey = append(userFollowCountKey, "user:follow_count/"...)
+	userFollowerCountKey = append(userFollowerCountKey, "user:follower_count/"...)
 }
 
-func getKey(vid int64, prefix []byte) string {
+func getKey(id int64, prefix []byte) string {
 	s := make([]byte, 0, 50)
 	copy(s, prefix)
-	s = append(s, strconv.FormatInt(vid, 16)...)
+	s = append(s, strconv.FormatInt(id, 16)...)
 	return string(s)
 }
 
-func getVideoFavoriteCountKey(vid int64) string {
-	return getKey(vid, videoFavoriteCountKey)
+func getVideoFavoriteCountKey(id int64) string {
+	return getKey(id, videoFavoriteCountKey)
 }
 
-func getVideoCommentCountKey(vid int64) string {
-	return getKey(vid, videoCommentCountKey)
+func getVideoCommentCountKey(id int64) string {
+	return getKey(id, videoCommentCountKey)
 }
 
-func getVideoPlayCountKey(vid int64) string {
-	return getKey(vid, videoPlayCountKey)
+func getVideoPlayCountKey(id int64) string {
+	return getKey(id, videoPlayCountKey)
+}
+
+func getUserFollowCountKey(id int64) string {
+	return getKey(id, userFollowCountKey)
+}
+
+func getUserFollowerCountKey(id int64) string {
+	return getKey(id, userFollowerCountKey)
 }
 
 // getFavoriteCount 视频的点赞总数
@@ -99,10 +111,28 @@ func getIsFavorite(wg *sync.WaitGroup, uid, vid int64, val *bool) {
 	// data[i].IsFavorite = db.Raw("SELECT * FROM user_favorite WHERE user_id = ? AND video_id = ?", uid, data[i].ID).Scan(&result).RowsAffected == 1
 }
 
-func getFollowCount(wg *sync.WaitGroup, uid int64, val *bool) {
+func getFollowCount(wg *sync.WaitGroup, uid int64, val *int64) {
 	defer wg.Done()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	key := getUserFollowCountKey(uid)
+	FollowCount, err := rdb.Get(ctx, key).Int64()
+	if err == redis.Nil {
+		db.Table("user_follow").Where("user_id = ?", uid).Count(&FollowCount)
+		_ = rdb.Set(ctx, key, FollowCount, 300*time.Second)
+	}
+	*val = FollowCount
 }
 
-func FollowerCount(wg *sync.WaitGroup, uid int64, val *bool) {
+func getFollowerCount(wg *sync.WaitGroup, uid int64, val *int64) {
 	defer wg.Done()
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	key := getUserFollowerCountKey(uid)
+	FollowerCount, err := rdb.Get(ctx, key).Int64()
+	if err == redis.Nil {
+		db.Table("user_follower").Where("user_id = ?", uid).Count(&FollowerCount)
+		_ = rdb.Set(ctx, key, FollowerCount, 300*time.Second)
+	}
+	*val = FollowerCount
 }
