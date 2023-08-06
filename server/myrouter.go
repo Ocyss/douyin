@@ -1,10 +1,11 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/Ocyss/douyin/cmd/flags"
 	"github.com/Ocyss/douyin/server/handlers"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type MyHandler func(*gin.Context) (int, any)
@@ -19,7 +20,7 @@ func decorator() func(h MyHandler) gin.HandlerFunc {
 				"status_msg":  "",
 			}
 			if code == 0 {
-				//判断数据类型
+				// 判断数据类型
 				if val, ok := data.(handlers.H); ok {
 					for k, v := range val {
 						req[k] = v
@@ -32,17 +33,20 @@ func decorator() func(h MyHandler) gin.HandlerFunc {
 				case string:
 					req["status_msg"] = data
 				case error:
-					//判断是否debug模式，是的话返回错误信息
+					// 判断是否debug模式，是的话返回错误信息
 					if flags.Dev || flags.Debug {
 						req["errmsg"] = data.(error).Error()
 					}
 				case handlers.MyErr:
 					e := data.(handlers.MyErr)
 					req["status_msg"] = e.Msg
-					//判断是否debug模式，是的话返回错误信息
+					// 判断是否debug模式，是的话返回错误信息
 					if flags.Dev || flags.Debug {
 						errs := make([]string, 0, 10)
 						for i := range e.Errs {
+							if e.Errs[i] == nil {
+								continue
+							}
 							errs = append(errs, e.Errs[i].Error())
 						}
 						req["errmsg"] = errs

@@ -46,10 +46,10 @@ func Init(r *gin.Engine) {
 	}
 	// 社交类接口
 	{
-		newRouter(router, "POST", "relation/action/", nil)       // 关注/取关 操作
-		newRouter(router, "GET", "relatioin/follow/list/", nil)  // 获取用户关注列表
-		newRouter(router, "GET", "relation/follower/list/", nil) // 获取用户粉丝列表
-		newRouter(router, "GET", "relation/friend/list/", nil)   // 获取用户好友列表
+		newRouter(router, "POST", "relation/action/", handlers.RelationAction)             // 关注/取关 操作
+		newRouter(router, "GET", "relation/follow/list/", handlers.RelationFollowList)     // 获取用户关注列表
+		newRouter(router, "GET", "relation/follower/list/", handlers.RelationFollowerList) // 获取用户粉丝列表
+		newRouter(router, "GET", "relation/friend/list/", handlers.RelationFriendList)     // 获取用户好友列表
 		// 消息类接口
 		{
 			newRouter(router, "GET", "message/chat/", handlers.MessageChat)      // 获取消息
