@@ -17,7 +17,7 @@ type Model struct {
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"comment:删除时间"`
 }
 
-func (u *Model) BeforeCreate(tx *gorm.DB) (err error) {
+func (m *Model) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 

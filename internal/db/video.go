@@ -38,9 +38,9 @@ func Feed(uid int64, ip string, latestTime string) ([]model.Video, error) {
 }
 
 // VideoUpload 视频投稿
-func VideoUpload(id int64, file multipart.File, url, title string) (int64, string, error) {
+func VideoUpload(uid int64, file multipart.File, url, title string, UserCreations []*model.UserCreation) (int64, string, error) {
 	data := model.Video{
-		AuthorID: id,
+		AuthorID: uid,
 		PlayUrl:  url,
 		Title:    title,
 	}
@@ -63,6 +63,15 @@ func VideoUpload(id int64, file multipart.File, url, title string) (int64, strin
 		if err != nil {
 			tx.Rollback()
 			return 0, "更新出错...", err
+		}
+	}
+	UserCreations = append([]*model.UserCreation{{VideoID: data.ID, UserID: uid, Type: "Up主"}}, UserCreations...)
+	for _, uc := range UserCreations {
+		uc.VideoID = data.ID
+		err := tx.Create(uc).Error
+		if err != nil {
+			tx.Rollback()
+			return 0, "创建出错...", err
 		}
 	}
 	tx.Commit()

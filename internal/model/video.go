@@ -28,28 +28,32 @@ type (
 	}
 	// UserCreation 联合作者
 	UserCreation struct {
-		VideoID   int64  `json:"video_id,omitempty" gorm:"primaryKey"`
-		UserID    int64  `json:"author_id" gorm:"primaryKey"`
-		Type      string `json:"type" gorm:"comment:创作者类型"` // Up主,参演，剪辑，录像，道具，编剧，打酱油
-		CreatedAt time.Time
+		VideoID   int64          `json:"video_id,omitempty" gorm:"primaryKey"`
+		UserID    int64          `json:"author_id" gorm:"primaryKey"`
+		Type      string         `json:"type" gorm:"comment:创作者类型"` // Up主, 参演，剪辑，录像，道具，编剧，打酱油
+		CreatedAt time.Time      `json:"created_at"`
 		DeletedAt gorm.DeletedAt `json:"-"`
 	}
 )
 
-func (u *Video) AfterFind(tx *gorm.DB) (err error) {
+func (v *Video) AfterFind(tx *gorm.DB) (err error) {
 	//if u.CoverUrl == "" {
 	//	u.CoverUrl = ""
 	//}
 	return
 }
 
-func (u *Video) BeforeCreate(tx *gorm.DB) (err error) {
-	if u.ID == 0 {
-		u.ID = utils.GetId(3, 20230724)
+func (v *Video) BeforeCreate(tx *gorm.DB) (err error) {
+	if v.ID == 0 {
+		v.ID = utils.GetId(3, 20230724)
 	}
 	return
 }
 
+func (uc *UserCreation) BeforeCreate(tx *gorm.DB) (err error) {
+	return
+}
+
 func init() {
-	addMigrate(&Video{})
+	addMigrate(&Video{}, &UserCreation{})
 }

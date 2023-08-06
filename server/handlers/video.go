@@ -10,12 +10,13 @@ import (
 )
 
 type (
-	actionData struct {
-		Data  multipart.File `json:"data" form:"data"`
-		Token string         `json:"token" form:"token"`
-		Title string         `json:"title" form:"title"`
-		Url   string         `json:"url" form:"url"`
-		ID    int64          `json:"id" form:"id"`
+	videoActionData struct {
+		Data          multipart.File        `json:"data" form:"data"`
+		Token         string                `json:"token" form:"token"`
+		Title         string                `json:"title" form:"title"`
+		Url           string                `json:"url" form:"url"`
+		UserID        int64                 `json:"id" form:"id"`
+		UserCreations []*model.UserCreation `json:"user_creations"`
 	}
 )
 
@@ -48,7 +49,7 @@ func VideoGet(c *gin.Context) (int, any) {
 
 // VideoAction 视频投稿
 func VideoAction(c *gin.Context) (int, any) {
-	var data actionData
+	var data videoActionData
 	file, _, err := c.Request.FormFile("data")
 	data.Data = file
 	data.Token = c.PostForm("token")
@@ -60,7 +61,7 @@ func VideoAction(c *gin.Context) (int, any) {
 	if err != nil {
 		return Err("Token 错误", err)
 	}
-	id, msg, err := db.VideoUpload(token.ID, data.Data, "", data.Title)
+	id, msg, err := db.VideoUpload(token.ID, data.Data, "", data.Title, data.UserCreations)
 	if err != nil {
 		return Err(msg, err)
 	}
@@ -70,10 +71,10 @@ func VideoAction(c *gin.Context) (int, any) {
 // VideoActionUrl 视频投稿
 // 测试接口可直接指定URL，或使用ID进行投稿
 func VideoActionUrl(c *gin.Context) (int, any) {
-	var data actionData
+	var data videoActionData
 
 	err := c.ShouldBindJSON(&data)
-	if err != nil || (data.ID == 0 && data.Token == "") || (data.Data == nil && data.Url == "") {
+	if err != nil || (data.UserID == 0 && data.Token == "") || (data.Data == nil && data.Url == "") {
 		return ErrParam(err)
 	}
 	if data.Token != "" {
@@ -81,9 +82,9 @@ func VideoActionUrl(c *gin.Context) (int, any) {
 		if err != nil {
 			return Err("Token 错误", err)
 		}
-		data.ID = token.ID
+		data.UserID = token.ID
 	}
-	id, msg, err := db.VideoUpload(data.ID, data.Data, data.Url, data.Title)
+	id, msg, err := db.VideoUpload(data.UserID, data.Data, data.Url, data.Title, data.UserCreations)
 	if err != nil {
 		return Err(msg, err)
 	}

@@ -11,9 +11,9 @@ type (
 		Model
 		Name            string     `json:"name" gorm:"index:,unique;size:32;comment:用户名称"`
 		Pawd            string     `json:"-" gorm:"size:128;comment:用户密码"`
-		FollowCount     int64      `json:"follow_count" gorm:"default:0;comment:关注总数"`
-		FollowerCount   int64      `json:"follower_count" gorm:"default:0;comment:粉丝总数"`
-		IsFollow        bool       `json:"is_follow" gorm:"-"` // 是否关注
+		FollowCount     int64      `json:"follow_count" gorm:"-"`   // 关注总数
+		FollowerCount   int64      `json:"follower_count" gorm:"-"` // 粉丝总数
+		IsFollow        bool       `json:"is_follow" gorm:"-"`      // 是否关注
 		Avatar          string     `json:"avatar" gorm:"comment:用户头像"`
 		BackgroundImage string     `json:"background_image" gorm:"comment:用户个人页顶部大图"`
 		Signature       string     `json:"signature" gorm:"default:此人巨懒;comment:个人简介"`
@@ -47,6 +47,7 @@ func (u *User) AfterFind(tx *gorm.DB) (err error) {
 		result := map[string]any{}
 		u.IsFollow = tx.Table("user_follower").Where("follower_id = ? AND user_id = ?", uid, u.ID).Take(&result).RowsAffected == 1
 	}
+
 	return
 }
 

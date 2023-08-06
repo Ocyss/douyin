@@ -20,9 +20,9 @@ type (
 	}
 )
 
-func (u *Comment) BeforeCreate(tx *gorm.DB) (err error) {
-	if u.ID == 0 {
-		u.ID = utils.GetId(2, 20230724)
+func (c *Comment) BeforeCreate(tx *gorm.DB) (err error) {
+	if c.ID == 0 {
+		c.ID = utils.GetId(2, 20230724)
 	}
 	return
 }

@@ -21,11 +21,11 @@ type (
 	}
 )
 
-func (u *Message) BeforeCreate(tx *gorm.DB) (err error) {
-	if u.ID == 0 {
-		u.ID = utils.GetId(3, 114514)
+func (m *Message) BeforeCreate(tx *gorm.DB) (err error) {
+	if m.ID == 0 {
+		m.ID = utils.GetId(3, 114514)
 	}
-	u.CreateTime = time.Now().Format("2006-01-02 15:04:05")
+	m.CreateTime = time.Now().Format("2006-01-02 15:04:05")
 	return
 }
 
