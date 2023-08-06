@@ -2,9 +2,10 @@ package tokens
 
 import (
 	"errors"
+	"time"
+
 	"github.com/Ocyss/douyin/internal/conf"
 	"github.com/golang-jwt/jwt/v5"
-	"time"
 )
 
 var JwtKey = []byte(conf.Conf.JwtSecret)
@@ -17,7 +18,7 @@ type MyClaims struct {
 
 // GetToken 生成token
 func GetToken(id int64, username string) (string, error) {
-	expireTime := time.Now().Add(time.Hour * 24 * 3) // 三天过期
+	expireTime := time.Now().Add(time.Hour * 24 * 90) // 三个月过期
 	SetClaims := MyClaims{
 		id,
 		username,
@@ -35,7 +36,6 @@ func CheckToken(token string) (*MyClaims, error) {
 	key, err := jwt.ParseWithClaims(token, &MyClaims{}, func(*jwt.Token) (any, error) {
 		return JwtKey, nil
 	})
-
 	if err != nil {
 		return nil, err
 	}

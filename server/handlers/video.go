@@ -1,11 +1,12 @@
 package handlers
 
 import (
+	"mime/multipart"
+
 	"github.com/Ocyss/douyin/internal/db"
 	"github.com/Ocyss/douyin/internal/model"
 	"github.com/Ocyss/douyin/utils/tokens"
 	"github.com/gin-gonic/gin"
-	"mime/multipart"
 )
 
 type (
@@ -27,8 +28,8 @@ func VideoGet(c *gin.Context) (int, any) {
 	if token != "" {
 		claims, err = tokens.CheckToken(token)
 		if err != nil {
-			return Err("验证失败,请重新登录", err)
-		}
+			return Err("Token 错误,请重新登录", err)
+		} // 没办法控制客户端退出登录,就这样好了(反正token 3个月才过期)
 	}
 
 	data, err := db.Feed(claims.ID, c.ClientIP(), t)
@@ -100,9 +101,7 @@ func VideoList(c *gin.Context) (int, any) {
 		return ErrParam(err)
 	}
 	_, err := tokens.CheckToken(reqs.Token)
-
 	if err != nil {
-
 		return Err("Token 错误", err)
 	}
 
