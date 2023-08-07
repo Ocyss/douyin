@@ -14,7 +14,7 @@ type (
 		AuthorID      int64      `json:"-" gorm:"index;notNull;comment:视频作者信息"`
 		Author        User       `json:"author"`
 		PlayUrl       string     `json:"play_url" gorm:"comment:视频播放地址"`
-		CoverUrl      string     `json:"cover_url" gorm:"-"`               // 视频封面地址
+		CoverUrl      string     `json:"cover_url" gorm:"comment:视频封面地址"`
 		FavoriteCount int64      `json:"favorite_count" gorm:"-"`          // 视频的点赞总数
 		FavoriteUser  []*User    `json:"-" gorm:"many2many:UserFavorite:"` // 喜欢用户列表
 		CommentCount  int64      `json:"comment_count" gorm:"-"`           // 视频的评论总数

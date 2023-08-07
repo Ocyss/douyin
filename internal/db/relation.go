@@ -11,25 +11,22 @@ import (
 // RelationAction 关注/取关
 func RelationAction(fid, tid int64, ActionType int) error {
 	var (
-		associationA, associationB *gorm.Association
-		errA, errB                 error
+		association *gorm.Association
+		err         error
 	)
 	tx := db.Begin()
-	associationA = tx.Model(&model.User{Model: id(fid)}).Association("Follow")
-	associationB = tx.Model(&model.User{Model: id(tid)}).Association("Follower")
+	association = tx.Model(&model.User{Model: id(fid)}).Association("Follow")
 	switch ActionType {
 	case 1:
-		errA = associationA.Append(&model.User{Model: id(tid)})
-		errB = associationB.Append(&model.User{Model: id(fid)})
+		err = association.Append(&model.User{Model: id(tid)})
 	case 2:
-		errA = associationA.Delete(&model.User{Model: id(tid)})
-		errB = associationB.Delete(&model.User{Model: id(fid)})
+		err = association.Delete(&model.User{Model: id(tid)})
 	default:
 		return errors.New("不合法的 ActionType")
 	}
-	if errA != nil || errB != nil {
+	if err != nil {
 		tx.Rollback()
-		return errors.Join(errA, errB)
+		return err
 	}
 	tx.Commit()
 	return nil

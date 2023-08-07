@@ -28,5 +28,5 @@ func Aliyun(uploadName string, file io.Reader) (string, error) {
 		return "", err
 	}
 	// 拼接链接,默认使用https
-	return fmt.Sprintf("https://%s.%s/%s", AliyunBucketName, AliyunEndpoint, uploadName), nil
+	return fmt.Sprintf("https://%s.%s/", AliyunBucketName, AliyunEndpoint), nil
 }

@@ -22,8 +22,8 @@ type (
 		Signature       string `json:"signature" form:"signature"`                  // 个人简介
 	}
 	userReqs struct {
-		ID    int64  `json:"user_id" form:"user_id" binding:"required"` // 用户id
-		Token string `json:"token" form:"token" binding:"required"`     // 用户鉴权token
+		ID    int64  `json:"user_id" form:"user_id"`                // 用户id
+		Token string `json:"token" form:"token" binding:"required"` // 用户鉴权token
 	}
 	userInfoResp struct {
 		ID              int64  `json:"user_id"`          // 用户id
@@ -105,9 +105,12 @@ func UserInfo(c *gin.Context) (int, any) {
 		return ErrParam(err)
 	}
 
-	_, err := tokens.CheckToken(reqs.Token)
+	claims, err := tokens.CheckToken(reqs.Token)
 	if err != nil {
 		return Err("Token 错误", err)
+	}
+	if reqs.ID == 0 {
+		reqs.ID = claims.ID
 	}
 	data, msg, err := db.UserInfo(reqs.ID)
 	if err != nil {
