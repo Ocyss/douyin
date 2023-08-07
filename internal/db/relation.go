@@ -50,7 +50,7 @@ func RelationFollowerGet(uid, tid int64) ([]*model.User, error) {
 	var data []*model.User
 	err := db.Set("user_id", uid).Table("user").
 		Joins("JOIN user_follow ON `user`.`id` = `user_follow`.`user_id` AND `user_follow`.`follow_id` = ?", tid).
-		Where("`user`.`deleted_at` IS NULL").Find(&data).Error
+		Select("`user`.*").Find(&data).Error
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,11 @@ func RelationFollowerGet(uid, tid int64) ([]*model.User, error) {
 // RelationFriendGet 获取好友列表 uid:本人id tid:待查id
 func RelationFriendGet(uid, tid int64) ([]*model.User, error) {
 	var data []*model.User
-	err := db.Set("user_id", uid).Model(&model.User{Model: id(tid)}).Association("Friend").Find(&data)
+	err := db.Set("user_id", uid).
+		Table("(SELECT `user`.* FROM `user` JOIN `user_follow` ON `user`.`id` = `user_follow`.`follow_id` AND `user_follow`.`user_id` = ?) as t", tid).
+		Joins("JOIN `user_follow` ON `t`.`id` = `user_follow`.`user_id`").
+		Where(" `user_follow`.`follow_id` = ?", tid).
+		Select("`t`.*").Find(&data).Error
 	if err != nil {
 		return nil, err
 	}

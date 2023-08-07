@@ -15,6 +15,7 @@ func MessagePush(fid, tid int64, content string) error {
 // MessageGet 获取消息列表
 func MessageGet(fid, tid, preTime int64) ([]*model.Message, error) {
 	var data []*model.Message
-	err := db.Where(model.Message{ToUserID: tid, FromUserID: fid}).Order("created_at DESC").Find(&data).Error
+	err := db.Where("created_at > ? AND (to_user_id = ? AND from_user_id = ? OR to_user_id = ? AND from_user_id = ?)", preTime, fid, tid, tid, fid).
+		Order("created_at ASC").Find(&data).Error
 	return data, err
 }

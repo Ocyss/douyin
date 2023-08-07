@@ -3,8 +3,6 @@ package handlers
 import (
 	"errors"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/Ocyss/douyin/internal/db"
 
 	"github.com/Ocyss/douyin/server/common"
@@ -31,7 +29,7 @@ func MessageChat(c *gin.Context) (int, any) {
 	if err != nil {
 		return Err("Token 错误", err)
 	}
-	log.Debug(reqs)
+
 	data, err := db.MessageGet(claims.ID, reqs.ToUserId, reqs.PreMsgTime)
 	if err != nil {
 		return Err("聊天记录获取失败", err)
