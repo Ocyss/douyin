@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Ocyss/douyin/internal/model"
+
 	"github.com/Ocyss/douyin/cmd/flags"
 	"github.com/Ocyss/douyin/internal/conf"
 	"github.com/Ocyss/douyin/internal/db"
@@ -80,6 +82,6 @@ func InitRdb() {
 		Password: rconf.Password,
 		DB:       rconf.Db,
 	})
-	db.InitRdb(rdb)
+	model.InitRdb(rdb)
 	log.Info("初始化 Redis 成功!")
 }

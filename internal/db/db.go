@@ -1,21 +1,14 @@
 package db
 
 import (
-	"context"
 	"reflect"
-	"time"
 
-	"github.com/Ocyss/douyin/cmd/flags"
 	"github.com/Ocyss/douyin/internal/model"
-	"github.com/redis/go-redis/v9"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
-var (
-	db  *gorm.DB
-	rdb *redis.Client
-)
+var db *gorm.DB
 
 // InitDb 初始化数据库服务
 func InitDb(d *gorm.DB) {
@@ -36,21 +29,6 @@ func InitDb(d *gorm.DB) {
 	}
 }
 
-// InitRdb 初始化 Redis
-func InitRdb(r *redis.Client) {
-	rdb = r
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	_, err := rdb.Ping(ctx).Result()
-	if err != nil {
-		log.Fatalf("连接redis出错，错误信息：%v", err)
-	}
-	// 内存模式下清空 Redis
-	if flags.Memory {
-		rdb.FlushAll(ctx)
-	}
-}
-
 // id 快捷用法返回一个Model{id:val}
 func id(val int64) model.Model {
 	return model.Model{ID: val}
@@ -58,8 +36,4 @@ func id(val int64) model.Model {
 
 func GetDb() *gorm.DB {
 	return db
-}
-
-func GetRdb() *redis.Client {
-	return rdb
 }

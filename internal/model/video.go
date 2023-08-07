@@ -1,9 +1,11 @@
 package model
 
 import (
+	"context"
 	"time"
 
 	"github.com/Ocyss/douyin/utils"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
@@ -26,20 +28,27 @@ type (
 		// 自建字段
 		CoAuthor []*User `json:"authors,omitempty" gorm:"many2many:UserCreation;"` // 联合投稿
 	}
-	// UserCreation 联合作者
-	UserCreation struct {
-		VideoID   int64          `json:"video_id,omitempty" gorm:"primaryKey"`
-		UserID    int64          `json:"author_id" gorm:"primaryKey"`
-		Type      string         `json:"type" gorm:"comment:创作者类型"` // Up主, 参演，剪辑，录像，道具，编剧，打酱油
-		CreatedAt time.Time      `json:"created_at"`
-		DeletedAt gorm.DeletedAt `json:"-"`
-	}
+)
+
+var (
+	videoFavoriteCountKey = make([]byte, 0, 50)
+	videoCommentCountKey  = make([]byte, 0, 50)
+	videoPlayCountKey     = make([]byte, 0, 50)
 )
 
 func (v *Video) AfterFind(tx *gorm.DB) (err error) {
-	//if v.CoverUrl == "" {
-	//	v.CoverUrl = "douyin/cover/?url=" + v.PlayUrl
-	//}
+	if uidA, ok := tx.Get("user_id"); ok {
+		if uid, ok := uidA.(int64); ok {
+			v.IsFavorite = getVideoIsFavorite(tx, uid, v.ID)
+		}
+	}
+	if ipA, ok := tx.Get("ip"); ok {
+		if ip, ok := ipA.(string); ok {
+			v.PlayCount = getVideoPlayCount(ip, v.ID)
+		}
+	}
+	v.FavoriteCount = getVideoFavoriteCount(tx, v.ID)
+	v.CommentCount = getVideoCommentCount(tx, v.ID)
 	return
 }
 
@@ -50,10 +59,52 @@ func (v *Video) BeforeCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-func (uc *UserCreation) BeforeCreate(tx *gorm.DB) (err error) {
-	return
+// getVideoFavoriteCount 视频的点赞总数
+func getVideoFavoriteCount(tx *gorm.DB, vid int64) int64 {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	key := getKey(vid, videoFavoriteCountKey)
+	favoriteCount, err := rdb.Get(ctx, key).Int64()
+	if err == redis.Nil {
+		tx.Table("user_favorite").Where("video_id = ?", vid).Count(&favoriteCount)
+		_ = rdb.Set(ctx, key, favoriteCount, 3*time.Second)
+	}
+	return favoriteCount
+}
+
+// getVideoCommentCount 视频的评论总数
+func getVideoCommentCount(tx *gorm.DB, vid int64) int64 {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	key := getKey(vid, videoCommentCountKey)
+	CommentCount, err := rdb.Get(ctx, key).Int64()
+	if err == redis.Nil {
+		tx.Model(&Comment{}).Where("video_id = ?", vid).Count(&CommentCount)
+		_ = rdb.Set(ctx, key, CommentCount, 3*time.Second)
+	}
+	return CommentCount
+}
+
+// getVideoPlayCount 视频的播放量
+func getVideoPlayCount(ip string, vid int64) int64 {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	key := getKey(vid, videoPlayCountKey)
+	rdb.PFAdd(ctx, key, ip)
+	val, _ := rdb.PFCount(ctx, key).Result()
+	return val
+}
+
+// getVideoIsFavorite 视频是否点赞
+func getVideoIsFavorite(tx *gorm.DB, uid, vid int64) bool {
+	result := map[string]any{}
+	return tx.Table("user_favorite").Where("user_id = ? AND video_id = ?", uid, vid).Take(&result).RowsAffected == 1
+	// data[i].IsFavorite = db.Raw("SELECT * FROM user_favorite WHERE user_id = ? AND video_id = ?", uid, data[i].ID).Scan(&result).RowsAffected == 1
 }
 
 func init() {
-	addMigrate(&Video{}, &UserCreation{})
+	addMigrate(&Video{})
+	videoFavoriteCountKey = append(videoFavoriteCountKey, "video:favorite_count/"...)
+	videoCommentCountKey = append(videoCommentCountKey, "video:comment_count/"...)
+	videoPlayCountKey = append(videoPlayCountKey, "video:play_count/"...)
 }

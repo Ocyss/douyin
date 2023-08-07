@@ -1,9 +1,6 @@
 package db
 
 import (
-	"context"
-	"time"
-
 	"github.com/Ocyss/douyin/internal/model"
 )
 
@@ -14,12 +11,6 @@ func CommentPush(uid, vid int64, content string) (*model.Comment, error) {
 	if err != nil {
 		return nil, err
 	}
-	go func() {
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-		defer cancel()
-		key := getVideoCommentCountKey(vid)
-		rdb.Incr(ctx, key)
-	}()
 	return &data, nil
 }
 

@@ -1,6 +1,9 @@
 package model
 
 import (
+	"context"
+	"time"
+
 	"github.com/Ocyss/douyin/utils"
 	"gorm.io/gorm"
 )
@@ -24,6 +27,10 @@ func (c *Comment) BeforeCreate(tx *gorm.DB) (err error) {
 	if c.ID == 0 {
 		c.ID = utils.GetId(2, 20230724)
 	}
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	key := getKey(c.VideoID, videoCommentCountKey)
+	rdb.Incr(ctx, key)
 	return
 }
 

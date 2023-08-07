@@ -1,6 +1,11 @@
 package model
 
 import (
+	"context"
+	"time"
+
+	"github.com/redis/go-redis/v9"
+
 	"github.com/Ocyss/douyin/utils"
 	"gorm.io/gorm"
 )
@@ -33,6 +38,19 @@ type (
 		Message string `json:"message" gorm:"comment:和该好友的最新聊天消息"`
 		MsgType bool   `json:"msg_type,number" gorm:"comment:消息类型"` // 0 => 当前请求用户接收的消息， 1 => 当前请求用户发送的消息
 	}
+	// UserCreation 联合作者
+	UserCreation struct {
+		VideoID   int64          `json:"video_id,omitempty" gorm:"primaryKey"`
+		UserID    int64          `json:"author_id" gorm:"primaryKey"`
+		Type      string         `json:"type" gorm:"comment:创作者类型"` // Up主, 参演，剪辑，录像，道具，编剧，打酱油
+		CreatedAt time.Time      `json:"created_at"`
+		DeletedAt gorm.DeletedAt `json:"-"`
+	}
+)
+
+var (
+	userFollowCountKey   = make([]byte, 0, 50)
+	userFollowerCountKey = make([]byte, 0, 50)
 )
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
@@ -57,11 +75,41 @@ func (u *User) AfterFind(tx *gorm.DB) (err error) {
 		result := map[string]any{}
 		u.IsFollow = tx.Table("user_follow").Where("follow_id = ? AND user_id = ?", u.ID, uid).Take(&result).RowsAffected == 1
 	}
-	tx.Table("user_follow").Where("user_id = ?", u.ID).Count(&u.FollowCount)
-	tx.Table("user_follow").Where("follow_id = ?", u.ID).Count(&u.FollowerCount)
+	// tx.Table("user_follow").Where("user_id = ?", u.ID).Count(&u.FollowCount)
+	// tx.Table("user_follow").Where("follow_id = ?", u.ID).Count(&u.FollowerCount)
+	u.FollowCount = getUserFollowCount(tx, u.ID)
+	u.FollowerCount = getUserFollowerCount(tx, u.ID)
 	return
 }
 
+// getUserFollowCount 获取关注数
+func getUserFollowCount(tx *gorm.DB, uid int64) int64 {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	key := getKey(uid, userFollowCountKey)
+	FollowCount, err := rdb.Get(ctx, key).Int64()
+	if err == redis.Nil {
+		tx.Table("user_follow").Where("user_id = ?", uid).Count(&FollowCount)
+		_ = rdb.Set(ctx, key, FollowCount, 3*time.Second)
+	}
+	return FollowCount
+}
+
+// getUserFollowerCount 获取粉丝数
+func getUserFollowerCount(tx *gorm.DB, uid int64) int64 {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	key := getKey(uid, userFollowerCountKey)
+	FollowerCount, err := rdb.Get(ctx, key).Int64()
+	if err == redis.Nil {
+		tx.Table("user_follow").Where("follow_id = ?", uid).Count(&FollowerCount)
+		_ = rdb.Set(ctx, key, FollowerCount, 3*time.Second)
+	}
+	return FollowerCount
+}
+
 func init() {
-	addMigrate(&User{})
+	addMigrate(&User{}, &UserCreation{})
+	userFollowCountKey = append(userFollowCountKey, "user:follow_count/"...)
+	userFollowerCountKey = append(userFollowerCountKey, "user:follower_count/"...)
 }

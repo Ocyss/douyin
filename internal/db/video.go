@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"mime/multipart"
-	"sync"
 
 	"gorm.io/gorm"
 
@@ -23,19 +22,19 @@ func Feed(uid int64, ip string, latestTime string) ([]model.Video, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	for i := range data {
-		var wg sync.WaitGroup
-		if uid != 0 {
-			wg.Add(1)
-			go getIsFavorite(&wg, uid, data[i].ID, &data[i].IsFavorite) // 是否点赞
-		}
-		wg.Add(3)
-		go getFavoriteCount(&wg, data[i].ID, &data[i].FavoriteCount) // 喜欢总数
-		go getCommentCount(&wg, data[i].ID, &data[i].CommentCount)   // 评论总数
-		go setPlayCount(&wg, ip, data[i].ID, &data[i].PlayCount)     // 播放量
-		wg.Wait()
-	}
+	// 交给钩子
+	//for i := range data {
+	//	var wg sync.WaitGroup
+	//	if uid != 0 {
+	//		wg.Add(1)
+	//		go model.getIsFavorite(&wg, uid, data[i].ID, &data[i].IsFavorite) // 是否点赞
+	//	}
+	//	wg.Add(3)
+	//	go model.getFavoriteCount(&wg, data[i].ID, &data[i].FavoriteCount) // 喜欢总数
+	//	go model.getCommentCount(&wg, data[i].ID, &data[i].CommentCount)   // 评论总数
+	//	go model.setPlayCount(&wg, ip, data[i].ID, &data[i].PlayCount)     // 播放量
+	//	wg.Wait()
+	//}
 	return data, nil
 }
 
