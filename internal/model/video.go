@@ -37,8 +37,8 @@ type (
 )
 
 func (v *Video) AfterFind(tx *gorm.DB) (err error) {
-	//if u.CoverUrl == "" {
-	//	u.CoverUrl = ""
+	//if v.CoverUrl == "" {
+	//	v.CoverUrl = "douyin/cover/?url=" + v.PlayUrl
 	//}
 	return
 }

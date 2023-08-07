@@ -21,8 +21,8 @@ type (
 		TotalFavorited  int64      `json:"total_favorited" gorm:"-"` // 获赞数量
 		FavoriteCount   int64      `json:"favorite_count" gorm:"-"`  // 点赞数量
 		Follow          []*User    `json:"follow,omitempty" gorm:"many2many:UserFollow;comment:关注列表"`
-		Follower        []*User    `json:"follower,omitempty" gorm:"many2many:UserFollower;comment:粉丝列表"`
-		Friend          []*User    `json:"friend,omitempty" gorm:"many2many:UserFriend;comment:好友列表"`
+		Follower        []*User    `json:"follower,omitempty" gorm:"-"` // 粉丝列表
+		Friend          []*User    `json:"friend,omitempty" gorm:"-"`   // 好友列表
 		Favorite        []*Video   `json:"like_list,omitempty" gorm:"many2many:UserFavorite;comment:喜欢列表"`
 		Videos          []*Video   `json:"video_list,omitempty" gorm:"many2many:UserCreation;comment:作品列表"`
 		Comment         []*Comment `json:"comment_list,omitempty" gorm:"comment:评论列表"`
@@ -45,10 +45,10 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 func (u *User) AfterFind(tx *gorm.DB) (err error) {
 	if uid, ok := tx.Get("user_id"); ok || u.ID != 0 {
 		result := map[string]any{}
-		u.IsFollow = tx.Table("user_follower").Where("follower_id = ? AND user_id = ?", uid, u.ID).Take(&result).RowsAffected == 1
+		u.IsFollow = tx.Table("user_follow").Where("follow_id = ? AND user_id = ?", u.ID, uid).Take(&result).RowsAffected == 1
 	}
 	tx.Table("user_follow").Where("user_id = ?", u.ID).Count(&u.FollowCount)
-	tx.Table("user_follower").Where("user_id = ?", u.ID).Count(&u.FollowerCount)
+	tx.Table("user_follow").Where("follow_id = ?", u.ID).Count(&u.FollowerCount)
 	return
 }
 

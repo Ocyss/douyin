@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/Ocyss/douyin/internal/db"
 
@@ -32,6 +31,9 @@ func RelationAction(c *gin.Context) (int, any) {
 	if err != nil {
 		return Err("Token 错误", err)
 	}
+	if claims.ID == reqs.ToUserId {
+		return Err("调皮~不可以关注自己哦.", err)
+	}
 	switch reqs.ActionType {
 	case 1, 2:
 		err = db.RelationAction(claims.ID, reqs.ToUserId, reqs.ActionType)
@@ -55,14 +57,13 @@ func RelationFollowList(c *gin.Context) (int, any) {
 		return ErrParam(err)
 	}
 	claims, err := tokens.CheckToken(reqs.Token)
-	fmt.Println(reqs, claims, err)
 	if err != nil {
 		return Err("Token 错误", err)
 	}
 	if reqs.UserId == 0 {
 		reqs.UserId = claims.ID
 	}
-	data, err := db.RelationFollowGet(reqs.UserId)
+	data, err := db.RelationFollowGet(claims.ID, reqs.UserId)
 	if err != nil {
 		return Err("再试试吧", err)
 	}
@@ -86,7 +87,7 @@ func RelationFollowerList(c *gin.Context) (int, any) {
 	if reqs.UserId == 0 {
 		reqs.UserId = claims.ID
 	}
-	data, err := db.RelationFollowerGet(reqs.UserId)
+	data, err := db.RelationFollowerGet(claims.ID, reqs.UserId)
 	if err != nil {
 		return Err("再试试吧", err)
 	}
@@ -110,7 +111,7 @@ func RelationFriendList(c *gin.Context) (int, any) {
 	if reqs.UserId == 0 {
 		reqs.UserId = claims.ID
 	}
-	data, err := db.RelationFriendGet(reqs.UserId)
+	data, err := db.RelationFriendGet(claims.ID, reqs.UserId)
 	if err != nil {
 		return Err("再试试吧", err)
 	}

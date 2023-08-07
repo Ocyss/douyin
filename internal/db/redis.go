@@ -123,7 +123,7 @@ func getFollowerCount(wg *sync.WaitGroup, uid int64, val *int64) {
 	key := getUserFollowerCountKey(uid)
 	FollowerCount, err := rdb.Get(ctx, key).Int64()
 	if err == redis.Nil {
-		db.Table("user_follower").Where("user_id = ?", uid).Count(&FollowerCount)
+		db.Table("user_follow").Where("follow_id = ?", uid).Count(&FollowerCount)
 		_ = rdb.Set(ctx, key, FollowerCount, 300*time.Second)
 	}
 	*val = FollowerCount

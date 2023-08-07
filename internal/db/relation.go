@@ -35,30 +35,32 @@ func RelationAction(fid, tid int64, ActionType int) error {
 	return nil
 }
 
-// RelationFollowGet 获取关注列表
-func RelationFollowGet(uid int64) ([]*model.User, error) {
+// RelationFollowGet 获取关注列表 uid:本人id tid:待查id
+func RelationFollowGet(uid, tid int64) ([]*model.User, error) {
 	var data []*model.User
-	err := db.Set("user_id", uid).Model(&model.User{Model: id(uid)}).Association("Follow").Find(&data)
+	err := db.Set("user_id", uid).Model(&model.User{Model: id(tid)}).Association("Follow").Find(&data)
 	if err != nil {
 		return nil, err
 	}
 	return data, nil
 }
 
-// RelationFollowerGet 获取粉丝列表
-func RelationFollowerGet(uid int64) ([]*model.User, error) {
+// RelationFollowerGet 获取粉丝列表 uid:本人id tid:待查id
+func RelationFollowerGet(uid, tid int64) ([]*model.User, error) {
 	var data []*model.User
-	err := db.Set("user_id", uid).Model(&model.User{Model: id(uid)}).Association("Follower").Find(&data)
+	err := db.Set("user_id", uid).Table("user").
+		Joins("JOIN user_follow ON `user`.`id` = `user_follow`.`user_id` AND `user_follow`.`follow_id` = ?", tid).
+		Where("`user`.`deleted_at` IS NULL").Find(&data).Error
 	if err != nil {
 		return nil, err
 	}
 	return data, nil
 }
 
-// RelationFriendGet 获取好友列表
-func RelationFriendGet(uid int64) ([]*model.User, error) {
+// RelationFriendGet 获取好友列表 uid:本人id tid:待查id
+func RelationFriendGet(uid, tid int64) ([]*model.User, error) {
 	var data []*model.User
-	err := db.Set("user_id", uid).Model(&model.User{Model: id(uid)}).Association("Friend").Find(&data)
+	err := db.Set("user_id", uid).Model(&model.User{Model: id(tid)}).Association("Friend").Find(&data)
 	if err != nil {
 		return nil, err
 	}
