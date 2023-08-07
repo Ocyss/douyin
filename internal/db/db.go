@@ -17,6 +17,7 @@ var (
 	rdb *redis.Client
 )
 
+// InitDb 初始化数据库服务
 func InitDb(d *gorm.DB) {
 	db = d
 	for _, m := range model.GetMigrate() {
@@ -35,6 +36,7 @@ func InitDb(d *gorm.DB) {
 	}
 }
 
+// InitRdb 初始化 Redis
 func InitRdb(r *redis.Client) {
 	rdb = r
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -49,6 +51,7 @@ func InitRdb(r *redis.Client) {
 	}
 }
 
+// id 快捷用法返回一个Model{id:val}
 func id(val int64) model.Model {
 	return model.Model{ID: val}
 }

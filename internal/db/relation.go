@@ -8,6 +8,7 @@ import (
 	"github.com/Ocyss/douyin/internal/model"
 )
 
+// RelationAction 关注/取关
 func RelationAction(fid, tid int64, ActionType int) error {
 	var (
 		associationA, associationB *gorm.Association
@@ -34,6 +35,7 @@ func RelationAction(fid, tid int64, ActionType int) error {
 	return nil
 }
 
+// RelationFollowGet 获取关注列表
 func RelationFollowGet(uid int64) ([]*model.User, error) {
 	var data []*model.User
 	err := db.Set("user_id", uid).Model(&model.User{Model: id(uid)}).Association("Follow").Find(&data)
@@ -43,6 +45,7 @@ func RelationFollowGet(uid int64) ([]*model.User, error) {
 	return data, nil
 }
 
+// RelationFollowerGet 获取粉丝列表
 func RelationFollowerGet(uid int64) ([]*model.User, error) {
 	var data []*model.User
 	err := db.Set("user_id", uid).Model(&model.User{Model: id(uid)}).Association("Follower").Find(&data)
@@ -52,6 +55,7 @@ func RelationFollowerGet(uid int64) ([]*model.User, error) {
 	return data, nil
 }
 
+// RelationFriendGet 获取好友列表
 func RelationFriendGet(uid int64) ([]*model.User, error) {
 	var data []*model.User
 	err := db.Set("user_id", uid).Model(&model.User{Model: id(uid)}).Association("Friend").Find(&data)

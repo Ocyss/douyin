@@ -27,6 +27,7 @@ func init() {
 	userFollowerCountKey = append(userFollowerCountKey, "user:follower_count/"...)
 }
 
+// getKey 字符串快速拼接
 func getKey(id int64, prefix []byte) string {
 	s := make([]byte, 0, 50)
 	copy(s, prefix)
@@ -111,6 +112,7 @@ func getIsFavorite(wg *sync.WaitGroup, uid, vid int64, val *bool) {
 	// data[i].IsFavorite = db.Raw("SELECT * FROM user_favorite WHERE user_id = ? AND video_id = ?", uid, data[i].ID).Scan(&result).RowsAffected == 1
 }
 
+// getFollowCount 获取关注数
 func getFollowCount(wg *sync.WaitGroup, uid int64, val *int64) {
 	defer wg.Done()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -124,6 +126,7 @@ func getFollowCount(wg *sync.WaitGroup, uid int64, val *int64) {
 	*val = FollowCount
 }
 
+// getFollowerCount 获取粉丝数
 func getFollowerCount(wg *sync.WaitGroup, uid int64, val *int64) {
 	defer wg.Done()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)

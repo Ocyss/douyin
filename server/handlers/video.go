@@ -11,12 +11,12 @@ import (
 
 type (
 	videoActionData struct {
-		Data          multipart.File        `json:"data" form:"data"`
-		Token         string                `json:"token" form:"token"`
-		Title         string                `json:"title" form:"title"`
-		Url           string                `json:"url" form:"url"`
-		UserID        int64                 `json:"id" form:"id"`
-		UserCreations []*model.UserCreation `json:"user_creations"`
+		Data          multipart.File        `json:"data" form:"data"`   // 视频数据
+		Token         string                `json:"token" form:"token"` // 用户鉴权token
+		Title         string                `json:"title" form:"title"` // 视频标题
+		Url           string                `json:"url" form:"url"`     // 视频URL(测试环境)
+		UserID        int64                 `json:"id" form:"id"`       // 用户ID(测试环境)
+		UserCreations []*model.UserCreation `json:"user_creations"`     // 联合投稿作者(半成品)
 	}
 )
 

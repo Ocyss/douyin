@@ -25,6 +25,7 @@ func GetMigrate() []any {
 	return migrate
 }
 
+// addMigrate 加入自动迁移列表中
 func addMigrate(model ...any) {
 	migrate = append(migrate, model...)
 }
