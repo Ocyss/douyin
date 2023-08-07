@@ -11,7 +11,6 @@ import (
 )
 
 var (
-	playCountUpdates      = make(chan string, 35)
 	videoFavoriteCountKey = make([]byte, 0, 50)
 	videoCommentCountKey  = make([]byte, 0, 50)
 	videoPlayCountKey     = make([]byte, 0, 50)
@@ -31,7 +30,7 @@ func init() {
 func getKey(id int64, prefix []byte) string {
 	s := make([]byte, 0, 50)
 	copy(s, prefix)
-	s = append(s, strconv.FormatInt(id, 16)...)
+	s = append(s, strconv.FormatInt(id, 10)...)
 	return string(s)
 }
 
@@ -92,16 +91,6 @@ func setPlayCount(wg *sync.WaitGroup, ip string, vid int64, val *int64) {
 	key := getVideoPlayCountKey(vid)
 	rdb.PFAdd(ctx, key, ip)
 	*val, _ = rdb.PFCount(ctx, key).Result()
-	go func() {
-		playCountUpdates <- key
-		if len(playCountUpdates) >= 30 {
-			for i := 0; i < 30; i++ {
-				v := <-playCountUpdates
-				val, _ := rdb.PFCount(ctx, v).Result()
-				db.Model(&model.Video{}).Where("id = ?", v[17:]).Update("play_count", val)
-			}
-		}
-	}()
 }
 
 // getIsFavorite 视频是否点赞

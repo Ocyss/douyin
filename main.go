@@ -5,5 +5,7 @@ import (
 )
 
 func main() {
+	// trace.Start(os.Stderr)
+	// defer trace.Stop()
 	cmd.Execute()
 }

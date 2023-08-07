@@ -24,12 +24,12 @@ var serverCmd = &cobra.Command{
 	Long:  `Start the douyin server`,
 	Run: func(cmd *cobra.Command, args []string) {
 		initServer()
-		r := gin.New()
 		if flags.Debug || flags.Dev {
 			gin.SetMode(gin.DebugMode)
 		} else {
 			gin.SetMode(gin.ReleaseMode)
 		}
+		r := gin.New()
 		server.Init(r)
 		base := fmt.Sprintf("%s:%d", conf.Conf.Address, conf.Conf.Port)
 		log.Infof("启动服务器 @ %s", base)
