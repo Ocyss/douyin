@@ -6,6 +6,8 @@ import (
 	"mime/multipart"
 	"sync"
 
+	"gorm.io/gorm"
+
 	"github.com/Ocyss/douyin/internal/model"
 	"github.com/Ocyss/douyin/utils/upload"
 )
@@ -76,6 +78,7 @@ func VideoUpload(uid int64, file multipart.File, PlayUrl, CoverUrl, title string
 			tx.Rollback()
 			return 0, "创建出错...", err
 		}
+		tx.Model(&model.User{Model: id(uc.UserID)}).UpdateColumn("work_count", gorm.Expr("work_count + ?", 1))
 	}
 	tx.Commit()
 	return data.ID, "", nil
