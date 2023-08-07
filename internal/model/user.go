@@ -18,8 +18,8 @@ type (
 		BackgroundImage string     `json:"background_image" gorm:"comment:用户个人页顶部大图"`
 		Signature       string     `json:"signature" gorm:"default:此人巨懒;comment:个人简介"`
 		WorkCount       int64      `json:"work_count" gorm:"default:0;comment:作品数量"`
-		TotalFavorited  int64      `json:"total_favorited" gorm:"-"` // 获赞数量
-		FavoriteCount   int64      `json:"favorite_count" gorm:"-"`  // 点赞数量
+		TotalFavorited  int64      `json:"total_favorited" gorm:"-"` // TODO: 获赞数量
+		FavoriteCount   int64      `json:"favorite_count" gorm:"-"`  // TODO: 点赞数量
 		Follow          []*User    `json:"follow,omitempty" gorm:"many2many:UserFollow;comment:关注列表"`
 		Follower        []*User    `json:"follower,omitempty" gorm:"-"` // 粉丝列表
 		Friend          []*User    `json:"friend,omitempty" gorm:"-"`   // 好友列表
