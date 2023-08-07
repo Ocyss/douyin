@@ -23,8 +23,8 @@ type (
 		BackgroundImage string     `json:"background_image" gorm:"comment:用户个人页顶部大图"`
 		Signature       string     `json:"signature" gorm:"default:此人巨懒;comment:个人简介"`
 		WorkCount       int64      `json:"work_count" gorm:"default:0;comment:作品数量"`
-		TotalFavorited  int64      `json:"total_favorited" gorm:"-"` // TODO: 获赞数量
-		FavoriteCount   int64      `json:"favorite_count" gorm:"-"`  // TODO: 点赞数量
+		TotalFavorited  int64      `json:"total_favorited" gorm:"-"` // 获赞数量
+		FavoriteCount   int64      `json:"favorite_count" gorm:"-"`  // 点赞数量
 		Follow          []*User    `json:"follow,omitempty" gorm:"many2many:UserFollow;comment:关注列表"`
 		Follower        []*User    `json:"follower,omitempty" gorm:"-"` // 粉丝列表
 		Friend          []*User    `json:"friend,omitempty" gorm:"-"`   // 好友列表
@@ -79,6 +79,8 @@ func (u *User) AfterFind(tx *gorm.DB) (err error) {
 	// tx.Table("user_follow").Where("follow_id = ?", u.ID).Count(&u.FollowerCount)
 	u.FollowCount = getUserFollowCount(tx, u.ID)
 	u.FollowerCount = getUserFollowerCount(tx, u.ID)
+	u.TotalFavorited = getUserTotalFavorited(tx, u.ID)
+	u.FavoriteCount = getUserFavoriteCount(tx, u.ID)
 	return
 }
 
@@ -106,6 +108,20 @@ func getUserFollowerCount(tx *gorm.DB, uid int64) int64 {
 		_ = rdb.Set(ctx, key, FollowerCount, 3*time.Second)
 	}
 	return FollowerCount
+}
+
+// getUserTotalFavorited 获取获赞数量
+func getUserTotalFavorited(tx *gorm.DB, uid int64) (totalFavorited int64) {
+	tx.Table("`user_creation`").
+		Joins("JOIN `user_favorite` ON `user_creation`.`video_id` = `user_favorite`.`video_id`").
+		Where("`user_creation`.`user_id` = ?", uid).Count(&totalFavorited)
+	return
+}
+
+// getUserFavoriteCount 获取点赞数量
+func getUserFavoriteCount(tx *gorm.DB, uid int64) (favoriteCount int64) {
+	tx.Table("user_favorite").Where("user_id = ?", uid).Count(&favoriteCount)
+	return
 }
 
 func init() {
