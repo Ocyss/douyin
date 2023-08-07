@@ -39,6 +39,16 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	if u.ID == 0 {
 		u.ID = utils.GetId(2, 114514)
 	}
+	if u.Avatar == "" {
+		url := make([]byte, 0, 88)
+		url = append(url, "https://api.multiavatar.com/"...)
+		url = append(url, u.Name...)
+		url = append(url, ".png"...)
+		u.Avatar = string(url)
+	}
+	if u.BackgroundImage == "" {
+		u.BackgroundImage = "https://api.paugram.com/wallpaper/"
+	}
 	return
 }
 
