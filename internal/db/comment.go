@@ -11,6 +11,8 @@ func CommentPush(uid, vid int64, content string) (*model.Comment, error) {
 	if err != nil {
 		return nil, err
 	}
+	data.User.ID = uid
+	db.Find(&data.User)
 	return &data, nil
 }
 
