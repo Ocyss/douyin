@@ -18,7 +18,7 @@ func Feed(uid int64, ip string, latestTime string) ([]model.Video, error) {
 		latestTime = "9223372036854775806"
 	}
 	// t := time.Unix(0, latestTime*int64(time.Millisecond))
-	err := db.Set("user_id", uid).Preload("Author").Where("id < ?", latestTime).Order("id DESC").Limit(5).Find(&data).Error
+	err := db.Set("user_id", uid).Set("ip", ip).Preload("Author").Where("id < ?", latestTime).Order("id DESC").Limit(5).Find(&data).Error
 	if err != nil {
 		return nil, err
 	}
