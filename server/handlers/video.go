@@ -97,22 +97,23 @@ func VideoActionUrl(c *gin.Context) (int, any) {
 
 // VideoList 发布列表
 func VideoList(c *gin.Context) (int, any) {
-	var (
-		data []*model.Video
-		reqs userReqs
-	)
+	var reqs userReqs
 	// 参数绑定
 	if err := c.ShouldBindQuery(&reqs); err != nil {
 		return ErrParam(err)
 	}
-	claims, err := tokens.CheckToken(reqs.Token)
-	if err != nil {
-		return Err("Token 错误", err)
+	if reqs.Token != "" {
+		claims, err := tokens.CheckToken(reqs.Token)
+		if err != nil {
+			return Err("Token 错误", err)
+		}
+		if reqs.ID == 0 {
+			reqs.ID = claims.ID
+		}
+	} else if reqs.ID == 0 {
+		return Err("无参数!!!")
 	}
-	if reqs.ID == 0 {
-		reqs.ID = claims.ID
-	}
-	data, err = db.VideoList(reqs.ID)
+	data, err := db.VideoList(reqs.ID)
 	if err != nil {
 		return Err("网卡了,再试一次吧", err)
 	}
