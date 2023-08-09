@@ -1,7 +1,6 @@
 package model
 
 import (
-	"context"
 	"time"
 
 	"github.com/Ocyss/douyin/utils"
@@ -28,10 +27,6 @@ func (c *Comment) BeforeCreate(tx *gorm.DB) (err error) {
 		c.ID = utils.GetId(2, 20230724)
 	}
 	c.CreateDate = time.Now().Format("01-02")
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer cancel()
-	key := getKey(c.VideoID, videoCommentCountKey)
-	rdb.Incr(ctx, key)
 	return
 }
 

@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"mime/multipart"
 
 	"github.com/Ocyss/douyin/internal/db"
@@ -86,12 +85,12 @@ func VideoActionUrl(c *gin.Context) (int, any) {
 		}
 		data.UserID = token.ID
 	}
-	fmt.Println("投稿", data)
+
 	id, msg, err := db.VideoUpload(data.UserID, data.Data, data.Url, data.CoverUrl, data.Title, data.UserCreations)
 	if err != nil {
 		return Err(msg, err)
 	}
-	fmt.Println("投稿", id)
+
 	return Ok(H{"vid": id})
 }
 

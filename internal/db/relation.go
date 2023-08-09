@@ -15,12 +15,18 @@ func RelationAction(fid, tid int64, ActionType int) error {
 		err         error
 	)
 	tx := db.Begin()
-	association = tx.Model(&model.User{Model: id(fid)}).Association("Follow")
+	fval := &model.User{Model: id(fid)}
+	tval := &model.User{Model: id(tid)}
+	association = tx.Model(fval).Association("Follow")
 	switch ActionType {
 	case 1:
-		err = association.Append(&model.User{Model: id(tid)})
+		err = association.Append(tval)
+		fval.HIncrByFollowCount(1)
+		tval.HIncrByFollowerCount(1)
 	case 2:
-		err = association.Delete(&model.User{Model: id(tid)})
+		err = association.Delete(tval)
+		fval.HIncrByFollowCount(-1)
+		tval.HIncrByFollowerCount(-1)
 	default:
 		return errors.New("不合法的 ActionType")
 	}

@@ -87,11 +87,14 @@ func VideoUpload(uid int64, file multipart.File, PlayUrl, CoverUrl, title string
 func VideoLike(uid, vid int64, _type int) error {
 	var err error
 	association := db.Model(&model.User{Model: id(uid)}).Association("Favorite")
+	val := &model.Video{Model: id(vid)}
 	switch _type {
 	case 1:
-		err = association.Append(&model.Video{Model: id(vid)})
+		err = association.Append(val)
+		val.HIncrByFavoriteCount(1)
 	case 2:
-		err = association.Delete(&model.Video{Model: id(vid)})
+		err = association.Delete(val)
+		val.HIncrByFavoriteCount(-1)
 	default:
 		err = errors.New("你看看你传的什么东西吧")
 	}
