@@ -33,8 +33,8 @@ type (
 	// FriendUser 好友结构体
 	FriendUser struct {
 		User
-		Message string `json:"message" gorm:"comment:和该好友的最新聊天消息"`
-		MsgType bool   `json:"msg_type,number" gorm:"comment:消息类型"` // 0 => 当前请求用户接收的消息， 1 => 当前请求用户发送的消息
+		Message string `json:"message"`  // 和该好友的最新聊天消息
+		MsgType int    `json:"msg_type"` // 0 => 当前请求用户接收的消息， 1 => 当前请求用户发送的消息
 	}
 	// UserCreation 联合作者
 	UserCreation struct {
