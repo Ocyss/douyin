@@ -29,21 +29,36 @@ type (
 	}
 )
 
-var videoCountKey = make([]byte, 0, 50) // video_count:
+var (
+	videoCountKey     = make([]byte, 0, 50) // video_count:
+	videoPlayCountKey = make([]byte, 0, 50) // video_play_count:
+)
 
 func (v *Video) AfterFind(tx *gorm.DB) (err error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	key := getKey(v.ID, videoCountKey)
+	playKey := getKey(v.ID, videoPlayCountKey)
 	if uidA, ok := tx.Get("user_id"); ok {
 		if uid, ok := uidA.(int64); ok {
 			v.IsFavorite = getVideoIsFavorite(tx, uid, v.ID)
 		}
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer cancel()
-	key := getKey(v.ID, videoCountKey)
-	v.PlayCount, _ = rdb.HIncrBy(ctx, key, "play_count", 1).Result()
+	// v.PlayCount, _ = rdb.HIncrBy(ctx, key, "play_count", 1).Result()
+	v.PlayCount, _ = rdb.PFCount(ctx, playKey).Result()
 	v.FavoriteCount, _ = rdb.HGet(ctx, key, "favorite_count").Int64()
 	v.CommentCount, _ = rdb.HGet(ctx, key, "comment_count").Int64()
+	tx.Find(&v.Author, v.AuthorID)
 	return
+}
+
+func (v *Video) ViewedFilter(ip string) bool {
+	playKey := getKey(v.ID, videoPlayCountKey)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+	val, _ := rdb.PFAdd(ctx, playKey, ip).Result()
+	// 1:未看 0:已看
+	return val == 1
 }
 
 func (v *Video) BeforeCreate(tx *gorm.DB) (err error) {
@@ -115,4 +130,5 @@ func getVideoIsFavorite(tx *gorm.DB, uid, vid int64) bool {
 func init() {
 	addMigrate(&Video{})
 	videoCountKey = append(videoCountKey, "video_count:"...)
+	videoPlayCountKey = append(videoPlayCountKey, "video_play_count:"...)
 }

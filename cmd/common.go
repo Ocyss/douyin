@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"math/rand"
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/Ocyss/douyin/cmd/flags"
 	"github.com/Ocyss/douyin/internal/bootstrap"
@@ -32,6 +34,7 @@ func initServer() {
 	bootstrap.InitLog()
 	bootstrap.InitDb()
 	bootstrap.InitRdb()
+	rand.Seed(time.Now().Unix())
 }
 
 // initDaemon 守护进程初始化

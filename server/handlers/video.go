@@ -26,7 +26,6 @@ func VideoGet(c *gin.Context) (int, any) {
 	var err error
 	claims := new(tokens.MyClaims)
 	token := c.Query("token")
-	t := c.Query("latest_time")
 	if token != "" {
 		claims, err = tokens.CheckToken(token)
 		if err != nil {
@@ -34,16 +33,13 @@ func VideoGet(c *gin.Context) (int, any) {
 		} // 没办法控制客户端退出登录,就这样好了(反正token 3个月才过期)
 	}
 
-	data, err := db.Feed(claims.ID, c.ClientIP(), t)
+	data, err := db.Feed(claims.ID, c.ClientIP())
 	if err != nil {
 		return Err("数据获取出错，请稍后再试.", err)
 	}
 
 	res := H{
 		"video_list": data,
-	}
-	if len(data) > 0 {
-		res["next_time"] = data[len(data)-1].ID
 	}
 	return Ok(res)
 }

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"mime/multipart"
 
+	"github.com/Ocyss/douyin/utils"
+
 	"gorm.io/gorm"
 
 	"github.com/Ocyss/douyin/internal/model"
@@ -12,30 +14,21 @@ import (
 )
 
 // Feed 获取视频流
-func Feed(uid int64, ip string, latestTime string) ([]model.Video, error) {
+func Feed(uid int64, ip string) ([]model.Video, error) {
 	var data []model.Video
-	if len(latestTime) != 19 {
-		latestTime = "9223372036854775806"
+	res := make([]model.Video, 0, 10)
+	// 循环20次,随机生成20个主键id,通过IP来减少重复推送
+	for batch := 0; len(res) < 3 && batch < 20; batch++ {
+		rv := utils.RandVid(videoAll, 20)
+		db.Set("user_id", uid).Where(rv).Find(&data)
+		for i := 0; i < len(data) && len(res) < 3; i++ {
+			if data[i].ViewedFilter(ip) {
+				data[i].PlayCount++
+				res = append(res, data[i])
+			}
+		}
 	}
-	// t := time.Unix(0, latestTime*int64(time.Millisecond))
-	err := db.Set("user_id", uid).Set("ip", ip).Preload("Author").Where("id < ?", latestTime).Order("id DESC").Limit(5).Find(&data).Error
-	if err != nil {
-		return nil, err
-	}
-	// 交给钩子
-	//for i := range data {
-	//	var wg sync.WaitGroup
-	//	if uid != 0 {
-	//		wg.Add(1)
-	//		go model.getIsFavorite(&wg, uid, data[i].ID, &data[i].IsFavorite) // 是否点赞
-	//	}
-	//	wg.Add(3)
-	//	go model.getFavoriteCount(&wg, data[i].ID, &data[i].FavoriteCount) // 喜欢总数
-	//	go model.getCommentCount(&wg, data[i].ID, &data[i].CommentCount)   // 评论总数
-	//	go model.setPlayCount(&wg, ip, data[i].ID, &data[i].PlayCount)     // 播放量
-	//	wg.Wait()
-	//}
-	return data, nil
+	return res, nil
 }
 
 // VideoUpload 视频投稿
@@ -80,6 +73,7 @@ func VideoUpload(uid int64, file multipart.File, PlayUrl, CoverUrl, title string
 		tx.Model(&model.User{Model: id(uc.UserID)}).UpdateColumn("work_count", gorm.Expr("work_count + ?", 1))
 	}
 	tx.Commit()
+	videoAll = append(videoAll, data.ID)
 	return data.ID, "", nil
 }
 
@@ -111,13 +105,6 @@ func VideoLikeList(uid int64) ([]*model.Video, error) {
 	if err != nil {
 		return nil, err
 	}
-	for i := range data {
-		err = db.Preload("Author").Find(data[i]).Error
-		if err != nil {
-			return nil, err
-		}
-		data[i].IsFavorite = true
-	}
 	return data, nil
 }
 
@@ -127,12 +114,6 @@ func VideoList(uid int64) ([]*model.Video, error) {
 	err := db.Set("user_id", uid).Model(&model.User{Model: id(uid)}).Association("Videos").Find(&data)
 	if err != nil {
 		return nil, err
-	}
-	for i := range data {
-		err = db.Preload("Author").Find(data[i]).Error
-		if err != nil {
-			return nil, err
-		}
 	}
 	return data, nil
 }
