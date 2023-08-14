@@ -25,6 +25,7 @@ type (
 		FavoriteCount int64      `json:"favorite_count" gorm:"-"` // 视频的点赞总数
 		CommentCount  int64      `json:"comment_count" gorm:"-"`  // 视频的评论总数
 		// 自建字段
+		TypeOf   string  `json:"typeOf" gorm:"comment:视频类型"`
 		CoAuthor []*User `json:"authors,omitempty" gorm:"many2many:UserCreation;"` // 联合投稿
 	}
 )

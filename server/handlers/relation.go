@@ -12,9 +12,9 @@ import (
 
 type relationReqs struct {
 	Token      string `json:"token" form:"token" binding:"required"` // 用户鉴权token
-	ToUserId   int64  `json:"to_user_id" form:"to_user_id"`          // 对方用户id
+	ToUserId   int64  `json:"to_user_id,string" form:"to_user_id"`   // 对方用户id
 	ActionType int    `json:"action_type" form:"action_type"`        // 1-关注，2-取消关注
-	UserId     int64  `json:"user_id" form:"user_id"`                // 用户id
+	UserId     int64  `json:"user_id,string" form:"user_id"`         // 用户id
 }
 
 // RelationAction 关系操作

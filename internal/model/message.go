@@ -10,8 +10,8 @@ type (
 	Message struct {
 		ID         int64  `json:"id" gorm:"primarykey;comment:主键"`
 		CreatedAt  int64  `json:"create_time" gorm:"autoUpdateTime:milli"`
-		ToUserID   int64  `json:"to_user_id" gorm:"primaryKey;comment:该消息接收者的id"`
-		FromUserID int64  `json:"from_user_id" gorm:"primaryKey;comment:该消息发送者的id"`
+		ToUserID   int64  `json:"to_user_id,string" gorm:"primaryKey;comment:该消息接收者的id"`
+		FromUserID int64  `json:"from_user_id,string" gorm:"primaryKey;comment:该消息发送者的id"`
 		ToUser     User   `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 		FromUser   User   `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 		Content    string `json:"content" gorm:"comment:消息内容"`

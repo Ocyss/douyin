@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/Ocyss/douyin/internal/db"
 	"github.com/Ocyss/douyin/internal/model"
@@ -22,11 +23,11 @@ type (
 		Signature       string `json:"signature" form:"signature"`                  // 个人简介
 	}
 	userReqs struct {
-		ID    int64  `json:"user_id" form:"user_id"` // 用户id
-		Token string `json:"token" form:"token"`     // 用户鉴权token
+		ID    int64  `json:"user_id,string" form:"user_id"` // 用户id
+		Token string `json:"token" form:"token"`            // 用户鉴权token
 	}
 	userInfoResp struct {
-		ID              int64  `json:"user_id"`          // 用户id
+		ID              int64  `json:"user_id,string"`   // 用户id
 		Name            string `json:"name"`             // 用户名称
 		FollowCount     int64  `json:"follow_count"`     // 关注总数
 		FollowerCount   int64  `json:"follower_count"`   // 粉丝总数
@@ -59,7 +60,7 @@ func UserLogin(c *gin.Context) (int, any) {
 	if err != nil {
 		return Err("抱歉，麻烦再试一次吧...", err)
 	}
-	return Ok(H{"user_id": data.ID, "token": token})
+	return Ok(H{"user_id": strconv.FormatInt(data.ID, 10), "token": token})
 }
 
 // UserRegister 用户注册
@@ -91,7 +92,7 @@ func UserRegister(c *gin.Context) (int, any) {
 			return Err("抱歉，麻烦再试一次吧...", err)
 		}
 	}
-	return Ok(H{"user_id": data.ID, "token": token})
+	return Ok(H{"user_id": strconv.FormatInt(data.ID, 10), "token": token})
 }
 
 // UserInfo 用户信息

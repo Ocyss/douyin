@@ -11,11 +11,11 @@ import (
 )
 
 type messageReqs struct {
-	Token      string `json:"token" form:"token" binding:"required"`           // 用户鉴权token
-	ToUserId   int64  `json:"to_user_id" form:"to_user_id" binding:"required"` // 对方用户id
-	ActionType int32  `json:"action_type" form:"action_type"`                  // 1-发送消息
-	Content    string `json:"content" form:"content"`                          // 消息内容
-	PreMsgTime int64  `json:"pre_msg_time" form:"pre_msg_time"`                // 上次最新消息的时间
+	Token      string `json:"token" form:"token" binding:"required"`                  // 用户鉴权token
+	ToUserId   int64  `json:"to_user_id,string" form:"to_user_id" binding:"required"` // 对方用户id
+	ActionType int32  `json:"action_type" form:"action_type"`                         // 1-发送消息
+	Content    string `json:"content" form:"content"`                                 // 消息内容
+	PreMsgTime int64  `json:"pre_msg_time" form:"pre_msg_time"`                       // 上次最新消息的时间
 }
 
 // MessageChat 聊天记录

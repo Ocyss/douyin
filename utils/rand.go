@@ -26,6 +26,9 @@ func RandString(n int) string {
 }
 
 func RandVid(all []int64, n int) (res []int64) {
+	if len(all) <= n {
+		return all
+	}
 	set := make(map[int64]struct{}, n)
 	for len(set) < n {
 		set[all[r.Intn(len(all))]] = struct{}{}

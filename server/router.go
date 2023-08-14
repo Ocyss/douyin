@@ -37,7 +37,7 @@ func Init(r *gin.Engine) {
 		newRouter(router, "POST", "user/login/", handlers.UserLogin)       // 用户登录
 		newRouter(router, "GET", "user/", handlers.UserInfo)               // 获取用户信息
 	}
-	// 互动类接口
+	// 互动类接口,
 	{
 		newRouter(router, "POST", "favorite/action/", handlers.FavoriteAction) // 点赞操作
 		newRouter(router, "GET", "favorite/list/", handlers.FavoriteList)      // 获取喜欢列表

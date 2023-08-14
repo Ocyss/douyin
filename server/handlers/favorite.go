@@ -9,9 +9,9 @@ import (
 )
 
 type actionReqs struct {
-	Token      string `form:"token"   json:"token" binding:"required"`            // 用户鉴权token
-	VideoId    int64  `form:"video_id"   json:"video_id" binding:"required"`      // 视频id
-	ActionType int    `form:"action_type"  json:"action_type" binding:"required"` // 1-点赞，2-取消点赞
+	Token      string `form:"token"   json:"token" binding:"required"`              // 用户鉴权token
+	VideoId    int64  `form:"video_id"   json:"video_id,string" binding:"required"` // 视频id
+	ActionType int    `form:"action_type"  json:"action_type" binding:"required"`   // 1-点赞，2-取消点赞
 }
 
 // FavoriteAction 点赞
