@@ -11,11 +11,11 @@ import (
 )
 
 type commentReqs struct {
-	Token       string `form:"token" json:"token"`                          // 用户鉴权token
-	VideoId     int64  `form:"video_id" json:"video_id" binding:"required"` // 视频id
-	ActionType  int    `form:"action_type" json:"action_type"`              // 1-发布评论，2-删除评论
-	CommentText string `form:"comment_text" json:"comment_text"`            // 用户填写的评论内容
-	CommentId   int64  `form:"comment_id" json:"comment_id"`                // 要删除的评论id
+	Token       string `form:"token" json:"token"`                                 // 用户鉴权token
+	VideoId     int64  `form:"video_id" json:"video_id,string" binding:"required"` // 视频id
+	ActionType  int    `form:"action_type" json:"action_type"`                     // 1-发布评论，2-删除评论
+	CommentText string `form:"comment_text" json:"comment_text"`                   // 用户填写的评论内容
+	CommentId   int64  `form:"comment_id" json:"comment_id,string"`                // 要删除的评论id
 }
 
 // CommentAction 评论操作

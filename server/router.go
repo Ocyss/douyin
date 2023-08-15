@@ -30,6 +30,7 @@ func Init(r *gin.Engine) {
 		newRouter(router, "POST", "publish/action/", handlers.VideoAction)       // 视频投稿
 		newRouter(tester, "POST", "publish/actionUrl/", handlers.VideoActionUrl) // 视频投稿(测试接口)
 		newRouter(router, "GET", "publish/list/", handlers.VideoList)            // 获取发布列表
+		newRouter(router, "GET", "publish/follow/", handlers.VideoFollowList)    // 获取关注视频列表
 	}
 	// 用户类接口
 	{

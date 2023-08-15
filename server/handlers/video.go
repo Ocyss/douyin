@@ -122,3 +122,20 @@ func VideoList(c *gin.Context) (int, any) {
 
 	return Ok(H{"video_list": data})
 }
+
+func VideoFollowList(c *gin.Context) (int, any) {
+	var reqs userReqs
+	// 参数绑定
+	if err := c.ShouldBindQuery(&reqs); err != nil {
+		return ErrParam(err)
+	}
+	claims, err := tokens.CheckToken(reqs.Token)
+	if err != nil {
+		return Err("Token 错误", err)
+	}
+	data, err := db.VideoFollowList(claims.ID)
+	if err != nil {
+		return Err("网卡了,再试一次吧", err)
+	}
+	return Ok(H{"video_list": data})
+}

@@ -12,8 +12,8 @@ var migrate = make([]any, 0, 10)
 
 type Model struct {
 	ID        int64          `json:"id,string" gorm:"primarykey;comment:主键"`
-	CreatedAt time.Time      `json:"-" gorm:"comment:创建时间"`
-	UpdatedAt time.Time      `json:"-" gorm:"comment:修改时间"`
+	CreatedAt time.Time      `json:"created_at" gorm:"comment:创建时间"`
+	UpdatedAt time.Time      `json:"updated_at" gorm:"comment:修改时间"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"comment:删除时间"`
 }
 

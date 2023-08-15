@@ -133,3 +133,22 @@ func VideoList(uid int64) ([]*model.Video, error) {
 	}
 	return data, nil
 }
+
+// VideoFollowList 获取关注作品列表
+func VideoFollowList(uid int64) ([]*model.Video, error) {
+	var user []*model.User
+	var data []*model.Video
+	err := db.Set("user_id", uid).Model(&model.User{Model: id(uid)}).Association("Follow").Find(&user)
+	if err != nil {
+		return nil, err
+	}
+	for _, u := range user {
+		var videos []*model.Video
+		err := db.Set("user_id", uid).Model(&model.User{Model: id(u.ID)}).Association("Videos").Find(&videos)
+		if err != nil {
+			return nil, err
+		}
+		data = append(data, videos...)
+	}
+	return data, nil
+}
