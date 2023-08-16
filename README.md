@@ -7,7 +7,7 @@
   <p align="center">
     一个字节青训营的实战项目
 	<br />
-	开始于2023.7.24 结束于2023.8.
+	开始于2023.7.24 结束于2023.8.20
     <br />
      <br />
     <a href="https://github.com/Ocyss/Douyin/issues">报告Bug</a>
