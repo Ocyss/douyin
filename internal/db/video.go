@@ -84,7 +84,7 @@ func VideoUpload(uid int64, file multipart.File, PlayUrl, CoverUrl, title, typeO
 	}
 	tx.Commit()
 	videoAll["all"] = append(videoAll["all"], data.ID)
-	videoAll["t"] = append(videoAll["t"], data.ID)
+	videoAll[typeOf] = append(videoAll[typeOf], data.ID)
 	return data.ID, "", nil
 }
 
