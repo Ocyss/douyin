@@ -24,6 +24,9 @@ func Feed(uid int64, ip, ty string, repeat bool) ([]model.Video, error) {
 			rv = utils.RandVid(v, 20)
 		}
 		db.Set("user_id", uid).Where(rv).Find(&data)
+		utils.RandShuffle(len(data), func(i, j int) {
+			data[i], data[j] = data[j], data[i]
+		})
 		for i := 0; i < len(data) && len(res) < 3; i++ {
 			if data[i].ViewedFilter(ip) || repeat {
 				data[i].PlayCount++
