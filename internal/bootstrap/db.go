@@ -26,13 +26,13 @@ func InitDb() {
 	var dB *gorm.DB
 	var err error
 	log.Info("开始初始化 Database 服务!")
-	if flags.Memory {
+	if flags.Memory && false {
 		log.Info("当前处于 Memory模式,将使用内存数据库,并清空 Redis!")
 		dialector = sqlite.Open("file::memory:?cache=shared")
 	} else {
 		database := conf.Conf.Database
 		switch strings.ToUpper(database.Type) {
-		case "SQLITE3":
+		case "SQLITE3__":
 			sqliteUrl := fmt.Sprintf("%s?_journal=WAL&_vacuum=incremental", database.DbFile)
 			if database.DbFile == "" {
 				sqliteUrl = "file::memory:?cache=shared"
@@ -41,11 +41,12 @@ func InitDb() {
 		case "MYSQL":
 			dialector = mysql.Open(fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 				database.User, database.Password, database.Host, database.Port, database.Name))
-		case "POSTGRES":
+		case "POSTGRES__":
 			dialector = postgres.Open(fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable TimeZone=Asia/Shanghai",
 				database.Host, database.User, database.Password, database.Name, database.Port))
 		default:
-			log.Fatalf("not supported database type: %s,supported:[sqlite3,mysql,postgres]", database.Type)
+			// log.Fatalf("not supported database type: %s,supported:[sqlite3,mysql,postgres]", database.Type)
+			log.Fatalf("不支持的数据库类型: %s,目前只支持MySQL.", database.Type)
 		}
 	}
 	logLevel := logger.Silent

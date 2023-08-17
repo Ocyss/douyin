@@ -7,7 +7,7 @@ func DefaultConfig() Config {
 		Address: "0.0.0.0",
 		Port:    23724, // 2023-07-24
 		Database: confDatabase{
-			Type:     "sqlite3",
+			Type:     "mysql",
 			Host:     "localhost",
 			Port:     3306,
 			User:     "root",

@@ -29,7 +29,7 @@
 - Gin [(Web 框架)](https://gin-gonic.com/zh-cn/)
 - GORM [(ORM)](https://gorm.io/zh_CN/)
 - Cobra [(CLI 框架)](https://github.com/spf13/cobra)
-- MySQL,SQLite,PostgreSQL [(数据库)]()
+- MySQL [(数据库)]()
 - Redis [(缓存)]()
 
 #### 前端 Vue.js 3
