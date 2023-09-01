@@ -31,7 +31,9 @@ func RandVid(all []int64, n int) (res []int64) {
 	}
 	set := make(map[int64]struct{}, n)
 	for len(set) < n {
-		set[all[r.Intn(len(all))]] = struct{}{}
+		if index := r.Intn(len(all)); index >= 0 {
+			set[all[index]] = struct{}{}
+		}
 	}
 	for k := range set {
 		res = append(res, k)

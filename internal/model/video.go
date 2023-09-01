@@ -53,8 +53,8 @@ func (v *Video) AfterFind(tx *gorm.DB) (err error) {
 	return
 }
 
-func (v *Video) ViewedFilter(ip string) bool {
-	playKey := getKey(v.ID, videoPlayCountKey)
+func ViewedFilter(id int64, ip string) bool {
+	playKey := getKey(id, videoPlayCountKey)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 	val, _ := rdb.PFAdd(ctx, playKey, ip).Result()
