@@ -26,7 +26,7 @@ type (
 		ID    int64  `json:"user_id,string" form:"user_id"` // 用户id
 		Token string `json:"token" form:"token"`            // 用户鉴权token
 	}
-	userInfoResp struct {
+	UserInfoResp struct {
 		ID              int64  `json:"user_id,string"`   // 用户id
 		Name            string `json:"name"`             // 用户名称
 		FollowCount     int64  `json:"follow_count"`     // 关注总数
@@ -99,13 +99,12 @@ func UserRegister(c *gin.Context) (int, any) {
 func UserInfo(c *gin.Context) (int, any) {
 	var (
 		reqs userReqs
-		resp userInfoResp
+		resp UserInfoResp
 	)
 	// 参数绑定
 	if err := c.ShouldBindQuery(&reqs); err != nil {
 		return ErrParam(err)
 	}
-
 	claims, err := tokens.CheckToken(reqs.Token)
 	if err != nil {
 		return Err("Token 错误", err)

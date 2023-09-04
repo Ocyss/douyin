@@ -5,6 +5,8 @@ private
 .1024*
 /web/*
 /!web/README.md
+/public/*
+/!public/test.mp4
 douyin
 # project files
 .idea
